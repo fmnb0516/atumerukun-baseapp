@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+	<head>
+		<meta charset="utf-8">
+		<title>Torasan Admin</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<link rel="stylesheet" href="lib/bootstrap/css/bootstrap.minty.min.css" media="screen">
+		<link rel="stylesheet" href="lib/toast/toast.css" media="screen">
+	</head>
+	<body>
+		
+		<div class="navbar navbar-expand-lg fixed-top navbar-dark bg-primary">
+			<div class="container">
+				<a href="#" class="navbar-brand">Torasan Admin</a>
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				
+				<div class="collapse navbar-collapse" id="navbarResponsive">
+					<ul class="navbar-nav">
+						<li class="nav-item active">
+							<a class="nav-link" href="webcrawlers.html">Crawlers</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="pageresults.html">Results</a>
+						</li>
+					</ul>
+					
+					<ul class="nav navbar-nav ml-auto">
+						<li class="nav-item">
+							<a class="nav-link" href="#" target="_blank">Dev Torasan Admin</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		
+		<div class="container" style="padding-top: 80px;">
+			<div class="row">
+				<div class="col-lg-12" style="padding: 10px;">
+					<a href="updatewebcrawler.html" class="btn btn-info">New</a>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12">
+					<table class="table table-hover" id="crawlers">
+						<thead>
+							<tr>
+								<th scope="col">Name</th>
+								<th scope="col">Description</th>
+								<th scope="col">Schedule</th>
+								<th scope="col">URL</th>
+								<th scope="col">Status</th>
+								<th scope="col">Operation</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		
+		<script type="text/x-handlebars-template" id="template"> 
+			{{#each this}}
+				<tr>
+					<td><a href="./updatewebcrawler.html?id={{id}}">{{name}}</a></td>
+					<td>{{description}}</td>
+					<td>{{schedule}}</td>
+					<td><a href="{{target_url}}">{{target_url}}<a/></td>
+					<td>{{status}}</td>
+					<td><button targetid="{{id}}" type="button" class="btn btn-sm btn-danger delete-crawler">Delete</button></td>
+				</tr>
+			{{/each}}
+		</script>
+		
+		<script type="text/javascript" src="lib/jquery/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript" src="lib/handlebars/handlebars-v4.1.0.js"></script>
+		<script type="text/javascript" src="lib/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="lib/toast/toast.js"></script>
+		<script type="text/javascript" src="lib/app/application.js"></script>
+		
+		<script type="text/javascript">
+		
+			$(function() {
+				application.request({
+					method : "GET",
+					url : "/webscraping/list"
+				}).then(function(data) {
+					reload(data.result)
+				});
+				
+				var app = application.create();
+				function reload(crawlers) {
+					var html = app.render("template", crawlers);
+					$("#crawlers tbody").html(html);
+				};
+				
+				$(document).on("click", ".delete-crawler", function() {
+					var id = $(this).attr("targetid");
+					
+					application.confirm(true, "Crawlerを削除します", function() {
+						application.request({
+							method : "DELETE",
+							url : "/webscraping/"+id
+						}).then(function() {
+							application.request({
+								method : "GET",
+								url : "/webscraping/list"
+							}).then(function(data) {
+								reload(data.result);
+								application.toast("info", "Crawlerを削除しました");
+							});
+						});
+					});
+				});
+			});			
+		</script>
+	</body>
+</html>
