@@ -112,15 +112,28 @@
 			this.metadata = metadata;
 			
 			this.hbs.registerHelper('unixtime', function(t) {
-				var d = new Date(parseInt(t));
+				var d = new Date(t);
 				return d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日"
 					+ " "
 					+ ( '0' + d.getHours() ).slice(-2) + "時"
 					+ ( '0' + d.getMinutes() ).slice(-2) + "分";
 			});
 
+			this.hbs.registerHelper('dataval', function(val, type) {
+				if(type === "image") {
+					var image = "<img style=\"margin: 0 auto;width: 100%;\" src=\"/storage/" + val + "\"/>";
+					return new Handlebars.SafeString(image);
+				}
+				
+				return val;
+			});
+			
 			this.hbs.registerHelper('decodeurl', function(url) {
 				return decodeURI(url);
+			});
+			
+			this.hbs.registerHelper('compare', function(actual, expect, t, f) {
+				return actual === expect ? t : f;
 			});
 
 			this.hbs.registerHelper('json', function(json) {

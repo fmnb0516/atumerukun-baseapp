@@ -69,7 +69,7 @@
 					<td>{{description}}</td>
 					<td>{{schedule}}</td>
 					<td><a href="{{target_url}}">{{target_url}}<a/></td>
-					<td>{{status}}</td>
+					<td>{{compare status 0 "有効" "無効"}}</td>
 					<td><button targetid="{{id}}" type="button" class="btn btn-sm btn-danger delete-crawler">Delete</button></td>
 				</tr>
 			{{/each}}

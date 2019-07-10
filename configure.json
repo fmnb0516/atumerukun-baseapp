@@ -1,0 +1,17 @@
+{
+
+	"webserver" : {
+		"port" : 3000
+	},
+	
+	"database" : {
+		"type" : "mysql",
+		"configure" : {
+			"host": "localhost",
+			"port" : 3306,
+			"user": "node",
+			"password" : "password",
+			"dbname" : "node"
+		}
+	}
+}

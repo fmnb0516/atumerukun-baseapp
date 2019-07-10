@@ -36,34 +36,43 @@
 			</div>
 		</div>
 
-		<div class="container" style="padding-top: 80px;">
-			<div class="row">
-				<div class="col-lg-12">
-					<table class="table table-hover" id="pageresults">
-						<thead>
-							<tr>
-								<th scope="col">Name</th>
-								<th scope="col">URL</th>
-								<th scope="col">Create At</th>
-								<th scope="col">Operation</th>
-							</tr>
-						</thead>
-						<tbody>
-						</tbody>
-					</table>
-				</div>
-			</div>
+		<div class="container" style="padding-top: 80px;" id="contents">
 		</div>
 
-		<script type="text/x-handlebars-template" id="template"> 
-			{{#each this}}
-				<tr>
-					<td><a target="_blank" href="./pageresult.html?id={{id}}">{{name}}</a></td>
-					<td style="word-break : break-all;max-width:300px;">{{decodeurl url}}</td>
-					<td>{{unixtime create_at}}</td>
-					<td><button targetid="{{id}}" type="button" class="btn btn-sm btn-danger delete-result">Delete</button></td>
-				</tr>
-			{{/each}}
+		<script type="text/x-handlebars-template" id="template">
+			<div class="row">
+				<div class="col-lg-12">
+					<button type="button" class="btn btn-primary">Download Zip</button>
+
+					<br/><br/>
+
+					<ul class="nav nav-tabs">
+						{{#each page_values}}
+						<li class="nav-item">
+							<a class="nav-link" data-toggle="tab" href="#{{@key}}">{{@key}}</a>
+						</li>
+						{{/each}}
+					</ul>
+  
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12">
+					<div id="myTabContent" class="tab-content">
+						{{#each page_values}}
+						<div class="tab-pane" id="{{@key}}" style="padding: 10px;">
+							<ul class="list-group">
+								{{#each this}}
+								<li sort="{{sort}}" class="list-group-item d-flex justify-content-between align-items-center">
+									{{dataval data_value data_type}}
+								</li>
+								{{/each}}
+							</ul>
+						</div>
+						{{/each}}
+					</div>
+				</div>
+			</div>
 		</script>
 
 		<script type="text/javascript" src="lib/jquery/jquery-3.3.1.min.js"></script>
@@ -90,8 +99,8 @@
 					return vars[key] ? vars[key] : def; 
 				};
 				
-				var page = getQuery("p", "0");
-				var baseurl = "/pageresult/list?offset=" + (page*50) + "&limit=50";
+				var id = getQuery("id", "");
+				var baseurl = "/pageresult/" + id;
 
 				application.request({
 					method : "GET",
@@ -101,30 +110,11 @@
 				});
 
 				var app = application.create();
-				function reload(crawlers) {
-					var html = app.render("template", crawlers);
-					$("#pageresults tbody").html(html);
+				function reload(results) {
+					console.log(results);
+					var html = app.render("template", results);
+					$("#contents").html(html);
 				};
-
-				$(document).on("click", ".delete-result", function() {
-					var id = $(this).attr("targetid");
-					
-					application.confirm(true, "クロール結果を削除します", function() {
-						application.request({
-							method : "DELETE",
-							url : "/pageresult/"+id
-						}).then(function() {
-							application.request({
-								method : "GET",
-								url : baseurl
-							}).then(function(data) {
-								reload(data.result);
-								application.toast("info", "クロール結果を削除しました");
-							});
-						});
-					});
-				});
-
 			});
 		</script>
 	</body>

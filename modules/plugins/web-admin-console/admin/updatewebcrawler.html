@@ -7,6 +7,16 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<link rel="stylesheet" href="lib/bootstrap/css/bootstrap.minty.min.css" media="screen">
 		<link rel="stylesheet" href="lib/toast/toast.css" media="screen">
+		
+		<style>
+			.nav-link button {
+				display: none;
+			}
+			
+			.nav-link.active button {
+				display: inline-block;
+			}
+		</style>
 	</head>
 	<body>
 		
@@ -136,7 +146,7 @@
 		
 		<script type="text/x-handlebars-template" id="tab-nav-template"> 
 			<li class="nav-item">
-				<a class="nav-link" data-toggle="tab" href="#{{name}}">{{name}}</a>
+				<a class="nav-link" data-toggle="tab" href="#{{name}}">{{name}}&nbsp;&nbsp;<button type="button" class="btn btn-danger btn-sm delete-handler">X</button></a>
 			</li>
 		</script>
 		
@@ -294,6 +304,13 @@
 						});
 					});
 					
+				});
+				
+				$(document).on("click", ".delete-handler", function() {
+					$(this).parents("li").remove();
+					$("#tab-container .tab-pane.active").remove();
+					
+					$('.nav-tabs a[href="#basedata"]').tab('show');
 				});
 				
 				$(document).on("click", "#save-btn", function(e) {
