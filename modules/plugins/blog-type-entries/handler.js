@@ -1,6 +1,3 @@
-const cheerio = require('cheerio');
-const urlObj = require('url');
-
 module.exports = (installer, appContext, logger) => {
     installer.install("blog-type-entries", async (configure, chain) => {
         
@@ -19,7 +16,7 @@ module.exports = (installer, appContext, logger) => {
 		while(true) {
 			logger.info("resolve url : " + url);
 			
-			const data = await queryBlockData(appContext.httpclient, url, configure);
+			const data = await queryBlockData(appContext, url, configure);
 
 			logger.info("complete resolve entries. url=" +url+ ", next=" + data.next + ", count="+data.blocks.length);
 			
@@ -68,7 +65,7 @@ module.exports = (installer, appContext, logger) => {
     });
 };
 
-const queryBlockData = async (httpclient, url, configure) => {
+const queryBlockData = async (appContext, url, configure) => {
 	const selectorBlock = configure["selector_for_block"];
 	const selectorNext = configure["selector_for_next_page"];
 	
@@ -76,8 +73,8 @@ const queryBlockData = async (httpclient, url, configure) => {
 	const selectorEntryUpdate = configure["selector_for_update"];
 	const entryTerm = configure["process_target_term"];
 	
-	const response = await httpclient.wget(url);
-	const $ = cheerio.load(response.buffer.toString("utf8"));
+	const response = await appContext.httpclient.wget(url);
+	const $ = appContext.cheerio.load(response.buffer.toString("utf8"));
 
 	const blocks = [];
 	$(selectorBlock).each((i, elem) => {
@@ -87,7 +84,7 @@ const queryBlockData = async (httpclient, url, configure) => {
 		if(link === undefined) {
 			return;
 		}
-		blocks.push(prepareUrl(url, link));
+		blocks.push(prepareUrl(appContext, url, link));
 	});
 	
 	const next = $(selectorNext).attr("href");
@@ -97,8 +94,8 @@ const queryBlockData = async (httpclient, url, configure) => {
 	};
 };
 
-const prepareUrl = (from, next) => {
-	const fromUrl = urlObj.parse(from);
+const prepareUrl = (appContext, from, next) => {
+	const fromUrl = appContext.urlObj.parse(from);
 	if(next.startsWith("http://") || next.startsWith("https://")) {
 		return next;
 	} else if(next.startsWith("/")) {

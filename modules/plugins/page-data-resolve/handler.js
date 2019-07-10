@@ -1,7 +1,3 @@
-const cheerio = require('cheerio');
-const uuid = require('node-uuid');
-const urlObj = require('url');
-
 const accsessValue = (element, attr) => {
 	if(attr === "html") {
 		return element.html();
@@ -12,8 +8,8 @@ const accsessValue = (element, attr) => {
 	}
 };
 
-const extention = (url) => {
-	const src = urlObj.parse(url).pathname;
+const extention = (appContext, url) => {
+	const src = appContext.urlObj.parse(url).pathname;
 	
 	const slashIndex = src.lastIndexOf("/");
 	const path = src.substring(slashIndex);
@@ -23,9 +19,11 @@ const extention = (url) => {
 };
 
 class ValueManager {
-	constructor(baseDir) {
+	constructor(baseDir, appContext, logger) {
 		this.downloads = [];
 		this.baseDir = baseDir;
+		this.appContext = appContext;
+		this.logger = logger;
 	};
 	
 	prepareValue(element, attr, mode) {
@@ -35,7 +33,7 @@ class ValueManager {
 		} 
 		
 		if(mode === "download") {
-			const fileId = uuid.v4() + extention(value);
+			const fileId = this.appContext.uuid.v4() + extention(this.appContext, value);
 			
 			this.downloads.push({
 				id : fileId,
@@ -52,6 +50,8 @@ class ValueManager {
 		const promisses = [];
 		for (var i = 0; i < this.downloads.length; i++) {
 			const info = this.downloads[i];
+			
+			logger.info("start download url = "+ info.src + " =>" + this.baseDir + info.id);
 			promisses.push(httpclient.download(this.baseDir + info.id, info.src));
 		}
 		return Promise.all(promisses);
@@ -62,7 +62,7 @@ module.exports = (installer, appContext, logger) => {
     installer.install("page-data-resolve", async (configure, chain) => {
         logger.info("start process");
 		
-		const manager = new ValueManager(appContext.baseDir + "/storage/");
+		const manager = new ValueManager(appContext.baseDir + "/storage/", appContext, logger);
 		
 		const processors = Array.isArray(configure.processors) ? configure.processors : [];
 		
@@ -70,7 +70,7 @@ module.exports = (installer, appContext, logger) => {
 		
 		logger.info("fetch data : " + url);
 		const response = await appContext.httpclient.wget(url);
-		const $ = cheerio.load(response.buffer.toString("utf8"));
+		const $ = appContext.cheerio.load(response.buffer.toString("utf8"));
 		const pageResult = {};
 		
 		for (var i = 0; i < processors.length; i++) {
