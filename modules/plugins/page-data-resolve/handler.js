@@ -50,9 +50,8 @@ class ValueManager {
 		const promisses = [];
 		for (var i = 0; i < this.downloads.length; i++) {
 			const info = this.downloads[i];
-			
-			logger.info("start download url = "+ info.src + " =>" + this.baseDir + info.id);
-			promisses.push(httpclient.download(this.baseDir + info.id, info.src));
+			this.logger.info("start download url = "+ info.src + " =>" + this.baseDir + info.id);
+			promisses.push(this.appContext.httpclient.download(this.baseDir + info.id, info.src));
 		}
 		return Promise.all(promisses);
 	};

@@ -9,7 +9,7 @@
         html += "    <td><input type=\"text\" class=\"form-control\" name=\"dkey\"></td>";
         html += "    <td><input type=\"text\" class=\"form-control\" name=\"selector\"></td>";
         html += "    <td><input type=\"text\" class=\"form-control\" name=\"attr\"></td>";
-        html += "    <td><select class=\"form-control\" name=\"mode\"><option value=\"\">NONE</option><option value=\"downlod\">Download</option></select></td>";
+        html += "    <td><select class=\"form-control\" name=\"mode\"><option value=\"\">NONE</option><option value=\"download\">Download</option></select></td>";
         html += "    <td><button type=\"button\" class=\"btn btn-outline-danger page-data-resolve-delete-btn\">削除</button></td>";
         html += "</tr>";
 
