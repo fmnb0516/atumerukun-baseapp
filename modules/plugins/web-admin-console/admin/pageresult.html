@@ -42,7 +42,7 @@
 		<script type="text/x-handlebars-template" id="template">
 			<div class="row">
 				<div class="col-lg-12">
-					<button type="button" class="btn btn-primary">Download Zip</button>
+					<button id="download" type="button" class="btn btn-primary">Download Zip</button>
 
 					<br/><br/>
 
@@ -79,10 +79,15 @@
 		<script type="text/javascript" src="lib/handlebars/handlebars-v4.1.0.js"></script>
 		<script type="text/javascript" src="lib/bootstrap/js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="lib/toast/toast.js"></script>
+		<script type="text/javascript" src="lib/jszip/jszip.min.js"></script>
+		<script type="text/javascript" src="lib/md5/md5.js"></script>
 		<script type="text/javascript" src="lib/app/application.js"></script>
 
 		<script type="text/javascript">
 			$(function() {
+				var resultData = null;
+				var app = application.create();
+				
 				function getQuery(key, def) {
 					var vars = [], max = 0, hash = "", array = "";
 					var url = window.location.search;
@@ -99,6 +104,24 @@
 					return vars[key] ? vars[key] : def; 
 				};
 				
+				function hash(str) {
+					return CybozuLabs.MD5.calc(str);
+				};
+				
+				function now() {
+					var d = new Date();
+					return d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日"
+					+ "-"
+					+ ( '0' + d.getHours() ).slice(-2) + "時"
+					+ ( '0' + d.getMinutes() ).slice(-2) + "分";
+				};
+				
+				function reload(results) {
+					var html = app.render("template", results);
+					$("#contents").html(html);
+				};
+				
+				
 				var id = getQuery("id", "");
 				var baseurl = "/pageresult/" + id;
 
@@ -106,15 +129,57 @@
 					method : "GET",
 					url : baseurl
 				}).then(function(data) {
+					resultData = data.result;
 					reload(data.result)
 				});
-
-				var app = application.create();
-				function reload(results) {
-					console.log(results);
-					var html = app.render("template", results);
-					$("#contents").html(html);
-				};
+				
+				
+				$(document).on("click" ,"#download", function(e) {
+					var zip = new JSZip();
+					var deferreds = $.Deferred();
+					var promise = deferreds;
+					
+					console.log(resultData);
+					
+					var fileName = now() + "-" + hash(resultData.url) + "-pageresult.zip";
+					
+					for(var k in resultData.page_values) {
+						var d = resultData.page_values[k];
+						
+						for(var i = 0; i<d.length; i++) {
+							if(d[i].data_type !== "image") {
+								continue;
+							}
+							
+							var originalUrl = "/storage/" + d[i].data_value;
+							promise = promise.then(function() {
+								var newPromise = new $.Deferred();								
+								var xhr = new XMLHttpRequest();
+								xhr.open('GET', originalUrl, true);
+								xhr.responseType = 'arraybuffer';
+								
+								xhr.addEventListener('load', function() {
+									zip.file(originalUrl.match(".+/(.+?)([\?#;].*)?$")[1], xhr.response);
+									newPromise.resolve();
+								});
+						        xhr.send();
+								return newPromise;
+							});
+						}
+					}
+					
+					zip.file("data.json", JSON.stringify(resultData, null , "\t"));
+					promise.then(function(){
+						zip.generateAsync({type:"blob"}).then(function (content) {
+							var downLoadLink = document.createElement("a");
+							downLoadLink.download = fileName;
+							downLoadLink.href = URL.createObjectURL(content, {type: "application/zip"});
+							downLoadLink.click();
+						});
+					});
+					
+					deferreds.resolve();
+				});
 			});
 		</script>
 	</body>
