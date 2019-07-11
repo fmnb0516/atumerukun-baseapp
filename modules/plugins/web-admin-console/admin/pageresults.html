@@ -91,7 +91,7 @@
 				};
 				
 				var page = getQuery("p", "0");
-				var baseurl = "/pageresult/list?offset=" + (page*50) + "&limit=50";
+				var baseurl = "../pageresult/list?offset=" + (page*50) + "&limit=50";
 
 				application.request({
 					method : "GET",
@@ -112,7 +112,7 @@
 					application.confirm(true, "クロール結果を削除します", function() {
 						application.request({
 							method : "DELETE",
-							url : "/pageresult/"+id
+							url : "../pageresult/"+id
 						}).then(function() {
 							application.request({
 								method : "GET",

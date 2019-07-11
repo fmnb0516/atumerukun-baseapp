@@ -121,7 +121,7 @@
 
 			this.hbs.registerHelper('dataval', function(val, type) {
 				if(type === "image") {
-					var image = "<img style=\"margin: 0 auto;width: 100%;\" src=\"/storage/" + val + "\"/>";
+					var image = "<img style=\"margin: 0 auto;width: 100%;\" src=\"../storage/" + val + "\"/>";
 					return new Handlebars.SafeString(image);
 				}
 				
@@ -152,7 +152,7 @@
 				var uuid = generateUuid();
 
 				application.request({
-					url : "/metadata/load/"+type+"/html",
+					url : "../metadata/load/"+type+"/html",
 					method : "GET"
 				}).then(function(resp) {
 					var result = hbs.compile(resp)({uuid:uuid, data:configure});
@@ -176,7 +176,7 @@
 			metadata = metadata !== undefined ? metadata : {};
 			for(var k in metadata) {
 				if(metadata[k].js === true) {
-					var url = "/metadata/load/"+k+"/js";
+					var url = "../metadata/load/"+k+"/js";
 					$("body").append($("<script>", {type:"text/javascript", src:url}));
 				}
 			}

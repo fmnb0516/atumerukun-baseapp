@@ -86,7 +86,7 @@
 			$(function() {
 				application.request({
 					method : "GET",
-					url : "/webscraping/list"
+					url : "../webscraping/list"
 				}).then(function(data) {
 					reload(data.result)
 				});
@@ -103,11 +103,11 @@
 					application.confirm(true, "Crawlerを削除します", function() {
 						application.request({
 							method : "DELETE",
-							url : "/webscraping/"+id
+							url : "../webscraping/"+id
 						}).then(function() {
 							application.request({
 								method : "GET",
-								url : "/webscraping/list"
+								url : "../webscraping/list"
 							}).then(function(data) {
 								reload(data.result);
 								application.toast("info", "Crawlerを削除しました");

@@ -198,14 +198,14 @@
 				
 				var p1 = application.request({
 					method : "GET",
-					url : "/metadata/handlers"
+					url : "../metadata/handlers"
 				});
 				
 				var id = getQuery("id");
 				
 				var p2 = id === "" ? Promise.resolve({result:{}}) : application.request({
 					method : "GET",
-					url : "/webscraping/"+id
+					url : "../webscraping/"+id
 				});
 				
 				
@@ -295,7 +295,7 @@
 					application.confirm(true, "Crawlerを削除します", function() {
 						application.request({
 							method : "DELETE",
-							url : "/webscraping/"+id
+							url : "../webscraping/"+id
 						}).then(function() {
 							application.toast("info", "Crawlerを削除しました");
 							setTimeout(function() {
@@ -325,7 +325,7 @@
 						json.status = $("#base_input_status").prop('checked') ? 0 : 1;
 						json.pageHandlers = [];
 						
-						var req = id === "" ? {method:"POST", url:"/webscraping/new"} : {method:"PUT", url:"/webscraping/"+id};
+						var req = id === "" ? {method:"POST", url:"../webscraping/new"} : {method:"PUT", url:"../webscraping/"+id};
 						
 						$(".handler-content").each(function() {
 							var element = $(this);
