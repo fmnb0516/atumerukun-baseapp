@@ -50,7 +50,7 @@ module.exports = (installer, appContext, logger) => {
 				break;
 			}
 			
-			url = prepareUrl(url, data.next);
+			url = prepareUrl(appContext, url, data.next);
 			
 			pageCount += 1;
 			if(configure["max_process_page_count"] !== -1 && pageCount > configure["max_process_page_count"]) {
@@ -76,6 +76,7 @@ const queryBlockData = async (appContext, url, configure) => {
 	const response = await appContext.httpclient.wget(url);
 	const $ = appContext.cheerio.load(response.buffer.toString("utf8"));
 
+	console.log(response.buffer.toString("utf8"));
 	const blocks = [];
 	$(selectorBlock).each((i, elem) => {
 		const link = $(elem).find(selectorEntryLink).attr("href");
