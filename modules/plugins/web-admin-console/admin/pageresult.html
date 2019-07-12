@@ -133,15 +133,25 @@
 					reload(data.result)
 				});
 				
+				function createDlPromise(originalUrl, zip) {
+					return new Promise(function(resolve, reject){
+						var xhr = new XMLHttpRequest();
+						xhr.open('GET', originalUrl, true);
+						xhr.responseType = 'arraybuffer';
+						
+						xhr.addEventListener('load', function() {
+							var f = originalUrl.match(".+/(.+?)([\?#;].*)?$")[1];
+							zip.file(f, xhr.response);
+							resolve(f);
+						});
+						xhr.send();
+					});
+				};
 				
 				$(document).on("click" ,"#download", function(e) {
 					var zip = new JSZip();
-					var deferreds = $.Deferred();
-					var promise = deferreds;
-					
-					console.log(resultData);
-					
 					var fileName = now() + "-" + hash(resultData.url) + "-pageresult.zip";
+					var promisses = [];
 					
 					for(var k in resultData.page_values) {
 						var d = resultData.page_values[k];
@@ -152,24 +162,14 @@
 							}
 							
 							var originalUrl = "../storage/" + d[i].data_value;
-							promise = promise.then(function() {
-								var newPromise = new $.Deferred();								
-								var xhr = new XMLHttpRequest();
-								xhr.open('GET', originalUrl, true);
-								xhr.responseType = 'arraybuffer';
-								
-								xhr.addEventListener('load', function() {
-									zip.file(originalUrl.match(".+/(.+?)([\?#;].*)?$")[1], xhr.response);
-									newPromise.resolve();
-								});
-						        xhr.send();
-								return newPromise;
-							});
+							var promise = createDlPromise(originalUrl, zip);
+							promisses.push(promise);
 						}
 					}
 					
 					zip.file("data.json", JSON.stringify(resultData, null , "\t"));
-					promise.then(function(){
+					
+					Promise.all(promisses).then(function(){
 						zip.generateAsync({type:"blob"}).then(function (content) {
 							var downLoadLink = document.createElement("a");
 							downLoadLink.download = fileName;
@@ -178,7 +178,6 @@
 						});
 					});
 					
-					deferreds.resolve();
 				});
 			});
 		</script>
