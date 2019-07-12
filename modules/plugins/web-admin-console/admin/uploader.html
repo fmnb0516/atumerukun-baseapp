@@ -42,8 +42,8 @@
 				<div class="col-lg-12">
 					<form id="upload-form" method="POST" action="../file/upload" enctype="multipart/form-data">
 						<div class="form-group">
-							<label for="file">File input</label>
-							<input type="file" class="form-control-file" id="file" name="file" aria-describedby="fileHelp">
+							<label for="file">File</label>
+							<input type="file" class="form-control-file" id="upFile" name="upFile" aria-describedby="fileHelp">
 						</div>
 						<button type="submit" class="btn btn-primary">UPLOAD</button>
 					</form>
@@ -64,19 +64,18 @@
 				var app = application.create();
 
 				$("#upload-form").submit(function(e) {
-					alert("");
-					
 					var $form = $(this);
 					var formdata = new FormData($form.get(0));
 
-					application.request({
-							method : $form.attr("method"),
-							url : $form.attr("action"),
-							data: formdata,
-							cache       : false,
-							contentType : false,
-							processData : false,
-					}).then(function(data) {
+					$.ajax({
+						method : $form.attr("method"),
+						url : $form.attr("action"),
+						data: formdata,
+						cache       : false,
+						contentType : false,
+						processData : false,
+						dataType    : "json"
+					}).done(function(data, textStatus, jqXHR){
 						application.toast("info", "ファイルをアップロードしました");
 					});
 

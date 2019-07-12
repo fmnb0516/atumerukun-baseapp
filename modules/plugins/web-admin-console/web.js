@@ -21,9 +21,12 @@ const createErrorHandler = (req, res) => {
 module.exports = (installer, context) => {
 	installer.resource("/web-admin-console", "admin");
 	
-	installer.upload('/file/upload', "file", (req, res) => {
+	installer.upload('/file/upload', "upFile", (req, res) => {
 		const successHandler = createSuccessHandler(req, res);
-		successHandler("");
+
+		const toname = context.pathUtil.dirname(req.file.path) + "/" + req.file.originalname;
+		context.fileSystem.rename(req.file.path, toname)
+			.then(() => successHandler(""));
 	});
 
     installer.get('/metadata/handlers', (req, res) => {
