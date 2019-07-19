@@ -119,13 +119,20 @@
 					+ ( '0' + d.getMinutes() ).slice(-2) + "分";
 			});
 
-			this.hbs.registerHelper('dataval', function(val, type) {
-				if(type === "image") {
-					var image = "<img style=\"margin: 0 auto;width: 100%;\" src=\"../storage/" + val + "\"/>";
-					return new Handlebars.SafeString(image);
+			this.hbs.registerHelper('equals', function(val1, val2, opt) {
+				if(val1 === val2) {
+					return opt.fn(this);
+				} else {
+					return opt.inverse(this);
 				}
-				
-				return val;
+			});
+
+			this.hbs.registerHelper('notequals', function(val1, val2, opt) {
+				if(val1 === val2) {
+					return opt.inverse(this);
+				} else {
+					return opt.fn(this);
+				}
 			});
 			
 			this.hbs.registerHelper('decodeurl', function(url) {

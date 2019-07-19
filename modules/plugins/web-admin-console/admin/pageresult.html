@@ -39,10 +39,54 @@
 		<div class="container" style="padding-top: 80px;" id="contents">
 		</div>
 
+		<div class="modal" tabindex="-1" role="dialog" id="update-pagevalue-modal">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Update pageValue</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						
+						<div class="modal-body">
+							<input type="hidden" id="data_id_input" />
+							
+							<div class="form-group">
+								<label for="data_key_input">Data Key</label>
+								<input type="text" class="form-control" id="data_key_input" aria-describedby="" placeholder="">
+							</div>
+
+							<div class="form-group">
+								<label for="data_value_input">Data Value</label>
+								<input type="text" class="form-control" id="data_value_input" aria-describedby="" placeholder="">
+							</div>
+
+							<div class="form-group">
+								<label for="data_type_input">Data Type</label>
+								<input type="text" class="form-control" id="data_type_input" aria-describedby="" placeholder="">
+							</div>
+
+							<div class="form-group">
+								<label for="data_sort_input">Sort No</label>
+								<input type="number" class="form-control" id="data_sort_input" aria-describedby="" placeholder="">
+							</div>
+							
+						</div>
+						
+						<div class="modal-footer">
+							<button id="update-pagevalue-btn" type="button" class="btn btn-info">OK</button>
+							<button type="button" class="btn btn-success" data-dismiss="modal">Cancel</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
 		<script type="text/x-handlebars-template" id="template">
 			<div class="row">
 				<div class="col-lg-12">
 					<button id="download" type="button" class="btn btn-primary">Download Zip</button>
+					<button id="create-page-value-btn" type="button" class="btn btn-primary">新規</button>
 
 					<br/><br/>
 
@@ -63,8 +107,18 @@
 						<div class="tab-pane" id="{{@key}}" style="padding: 10px;">
 							<ul class="list-group">
 								{{#each this}}
-								<li sort="{{sort}}" class="list-group-item d-flex justify-content-between align-items-center">
-									{{dataval data_value data_type}}
+								<li data-id="{{id}}" data-type="{{data_type}}"  data-key="{{data_key}}" data-value="{{data_value}}" data-sort="{{sort}}" class="list-group-item d-flex justify-content-between align-items-center">
+									<div style="width: 100%;">
+										<div style="text-align: right;position: absolute;right: 10px;">
+											<button type="button" class="delete-value-btn btn btn-danger btn-sm">削除</button>
+											<button type="button" class="update-value-btn btn btn-primary btn-sm">更新</button>
+										</div>
+										{{#equals data_type "image"}}
+										<img style="margin: 0 auto;width: 100%;" src="../storage/{{data_value}}"/>
+										{{else}}
+										{{data_value}}
+										{{/equals}}
+									</div>
 								</li>
 								{{/each}}
 							</ul>
@@ -148,6 +202,44 @@
 					});
 				};
 				
+				$(document).on("click", ".delete-value-btn", function(e) {
+					application.confirm(true, "削除します", function() {
+
+					});
+				});
+
+				$(document).on("click", ".update-value-btn", function(e) {
+					var container = $(this).parents("li");
+
+					$("#data_id_input").val(container.attr("data-id"));
+					$("#data_key_input").val(container.attr("data-key"));
+					$("#data_value_input").val(container.attr("data-value"));
+					$("#data_type_input").val(container.attr("data-type"));
+					$("#data_sort_input").val(container.attr("data-sort"));
+
+					$("#update-pagevalue-modal").modal("show");
+				});
+
+				$(document).on("click", "#create-page-value-btn", function(e) {
+					$("#data_id_input").val("");
+					$("#data_key_input").val("");
+					$("#data_value_input").val("");
+					$("#data_type_input").val("");
+					$("#data_sort_input").val("");
+
+					$("#update-pagevalue-modal").modal("show");
+				})
+
+				$(document).on("click", "#update-pagevalue-btn", function(e) {
+					$("#data_id_input").val();
+					$("#data_key_input").val();
+					$("#data_value_input").val();
+					$("#data_type_input").val();
+					$("#data_sort_input").val();
+
+					$("#update-pagevalue-modal").modal("hide");
+				});
+
 				$(document).on("click" ,"#download", function(e) {
 					var zip = new JSZip();
 					var fileName = now() + "-" + hash(resultData.url) + "-pageresult.zip";
