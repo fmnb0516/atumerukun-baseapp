@@ -170,22 +170,26 @@
 					+ ( '0' + d.getMinutes() ).slice(-2) + "分";
 				};
 				
-				function reload(results) {
-					var html = app.render("template", results);
-					$("#contents").html(html);
-				};
-				
-				
-				var id = getQuery("id", "");
-				var baseurl = "../pageresult/" + id;
+				var reloadAllData = (function() {
+					function reload(results) {
+						var html = app.render("template", results);
+						$("#contents").html(html);
+					};
 
-				application.request({
-					method : "GET",
-					url : baseurl
-				}).then(function(data) {
-					resultData = data.result;
-					reload(data.result)
-				});
+					var id = getQuery("id", "");
+					var baseurl = "../pageresult/" + id;
+
+					return function(callback) {
+						application.request({
+							method : "GET",
+							url : baseurl
+						}).then(function(data) {
+							resultData = data.result;
+							reload(data.result);
+							callback();
+						});
+					};
+				})();
 				
 				function createDlPromise(originalUrl, zip) {
 					return new Promise(function(resolve, reject){
@@ -203,7 +207,18 @@
 				};
 				
 				$(document).on("click", ".delete-value-btn", function(e) {
+					var value_id = $(this).parents("li").attr("data-id");
 					application.confirm(true, "削除します", function() {
+						var opt = {method:"DELETE", url:"../pagevalue/"+value_id};
+						application.request(opt)
+							.then(function(resp) {
+								if(resp.status === 200) {
+									application.toast("info", "解析結果を削除しました。");
+									reloadAllData(function() {
+										application.toast("info", "解析結果を再読み込みしました。");
+									});
+								}
+						});
 
 					});
 				});
@@ -231,12 +246,32 @@
 				})
 
 				$(document).on("click", "#update-pagevalue-btn", function(e) {
-					$("#data_id_input").val();
-					$("#data_key_input").val();
-					$("#data_value_input").val();
-					$("#data_type_input").val();
-					$("#data_sort_input").val();
+					var json = {};
+					
+					var value_id = $("#data_id_input").val();
+					var result_id = resultData.id;
+					json.data_key = $("#data_key_input").val();
+					json.data_value = $("#data_value_input").val();
+					json.data_type = $("#data_type_input").val();
+					json.sort = $("#data_sort_input").val();
+					
+					var opt = value_id !== "" ? {method:"PUT", url:"../pagevalue/"+result_id+"/"+value_id}
+						: {method:"POST",url:"../pagevalue/"+result_id+"/new"};
+					opt.data = {
+						type:"json",
+						value:json
+					};
 
+					application.request(opt)
+						.then(function(resp) {
+							if(resp.status === 200) {
+								application.toast("info", "解析結果を更新しました。");
+								reloadAllData(function() {
+									application.toast("info", "解析結果を再読み込みしました。");
+								});
+							}
+							
+						});
 					$("#update-pagevalue-modal").modal("hide");
 				});
 
@@ -271,6 +306,8 @@
 					});
 					
 				});
+
+				reloadAllData(function() {});
 			});
 		</script>
 	</body>

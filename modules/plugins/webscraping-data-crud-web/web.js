@@ -183,4 +183,28 @@ module.exports = (installer, context) => {
 			.then(successHandler, errorHandler);
 	});
 
+	installer.post('/pagevalue/:id/new', (req, res) => {
+		const successHandler = createSuccessHandler(req, res);
+		const errorHandler = createErrorHandler(req, res);
+		
+		context.repo.createPageValue(req.params.id, req.body)
+			.then(successHandler, errorHandler);
+	});
+
+	installer.put('/pagevalue/:rid/:vid', (req, res) => {
+		const successHandler = createSuccessHandler(req, res);
+		const errorHandler = createErrorHandler(req, res);
+		
+		context.repo.updatePageValue(req.params.rid, req.params.vid, req.body)
+			.then(successHandler, errorHandler);
+	});
+
+	installer.delete('/pagevalue/:id', (req, res) => {
+		const successHandler = createSuccessHandler(req, res);
+		const errorHandler = createErrorHandler(req, res);
+		
+		context.repo.removePageValue(req.params.id)
+			.then(successHandler, errorHandler);
+	});
+
 };
