@@ -39,6 +39,7 @@ module.exports = (installer, context) => {
 	installer.resource("/web-admin-console", "admin");
 
 	const storageDir = context.baseDir + "/storage";
+	const hexoDir = context.configure.hexo;
 
 	const md5 = (str) => {
 		const md5 = context.external("crypto").createHash('md5')
@@ -63,7 +64,11 @@ module.exports = (installer, context) => {
 
 	installer.post('/publish/:id', (req, res) => {
 		const successHandler = createSuccessHandler(req, res);
-		const hexoDir = "/mnt/c/opt/workspace_eclipse/node/blog";
+
+		if(hexoDir === undefined || hexoDir === null || hexoDir === "") {
+			successHandler("no install hexo");
+			return;
+		}
 
 		context.repo.getPageResult(req.params.id)
 			.then(data => {

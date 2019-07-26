@@ -14,5 +14,7 @@
 			"password" : "password",
 			"dbname" : "node"
 		}
-	}
+	},
+
+	"hexo" : ""
 }
