@@ -85,6 +85,7 @@
 		<script type="text/x-handlebars-template" id="template">
 			<div class="row">
 				<div class="col-lg-12">
+					<button id="publishbtn" type="button" class="btn btn-primary">公開</button>
 					<button id="download" type="button" class="btn btn-primary">Download Zip</button>
 					<button id="create-page-value-btn" type="button" class="btn btn-primary">新規</button>
 
@@ -306,6 +307,20 @@
 					});
 					
 				});
+
+				$(document).on("click" ,"#publishbtn", function(e) {
+					application.confirm(true, "公開しますか", function() {
+						var id = resultData.id;
+						var opt = {method:"POST", url:"../publish/"+id};
+						application.request(opt)
+							.then(function(resp) {
+								if(resp.status === 200) {
+									application.toast("info", "解析結果を公開しました。");
+								}
+							});
+					});
+				});
+				
 
 				reloadAllData(function() {});
 			});

@@ -18,8 +18,30 @@ const createErrorHandler = (req, res) => {
 	};
 };
 
+const resolve = (map, key) => {
+	var data = map[key];
+	if(data === undefined || data === null) {
+			return [""];
+	} else {
+			return data.map(d => d.data_value);
+	}
+};
+
 module.exports = (installer, context) => {
 	installer.resource("/web-admin-console", "admin");
+
+	const md5 = (str) => {
+		const md5 = context.external("crypto").createHash('md5')
+		return md5.update(str, 'binary').digest('hex')
+	};
+
+	const initAssetDir = async (dir) => {
+		const eixist = await context.fileSystem.exist(dir);
+		if(eixist === true) {
+			await context.fileSystem.remove(dir);
+		}
+		return context.fileSystem.mkdirs(dir);
+	};
 	
 	installer.upload('/file/upload', "upFile", (req, res) => {
 		const successHandler = createSuccessHandler(req, res);
@@ -27,6 +49,23 @@ module.exports = (installer, context) => {
 		const toname = context.pathUtil.dirname(req.file.path) + "/" + req.file.originalname;
 		context.fileSystem.rename(req.file.path, toname)
 			.then(() => successHandler(""));
+	});
+
+	installer.post('/publish/:id', (req, res) => {
+		const successHandler = createSuccessHandler(req, res);
+		const hexoDir = "/mnt/c/opt/workspace_eclipse/node/blog";
+
+		context.repo.getPageResult(req.params.id)
+			.then(data => {
+				const id = md5(data.url);
+				const postFilePath = hexoDir + "/source/_posts/" + id + ".md";
+				const assetDir = hexoDir + "/source/images/" + id;
+				return initAssetDir(assetDir)
+					.then(() => [id, postFilePath, assetDir, data]);
+			}).then(data => {
+				successHandler("ok");
+			});
+		
 	});
 
     installer.get('/metadata/handlers', (req, res) => {
