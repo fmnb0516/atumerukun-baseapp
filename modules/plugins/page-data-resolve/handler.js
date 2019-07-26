@@ -9,7 +9,7 @@ const accsessValue = (element, attr) => {
 };
 
 const extention = (appContext, url) => {
-	const src = appContext.urlObj.parse(url).pathname;
+	const src = appContext.exteral("url").parse(url).pathname;
 	
 	const slashIndex = src.lastIndexOf("/");
 	const path = src.substring(slashIndex);
@@ -33,7 +33,7 @@ class ValueManager {
 		} 
 		
 		if(mode === "download") {
-			const fileId = this.appContext.uuid.v4() + extention(this.appContext, value);
+			const fileId = this.appContext.external("uuid").v4() + extention(this.appContext, value);
 			
 			this.downloads.push({
 				id : fileId,
@@ -69,7 +69,7 @@ module.exports = (installer, appContext, logger) => {
 		
 		logger.info("fetch data : " + url);
 		const response = await appContext.httpclient.wget(url);
-		const $ = appContext.cheerio.load(response.buffer.toString("utf8"));
+		const $ = appContext.external("cheerio").load(response.buffer.toString("utf8"));
 		const pageResult = {};
 		
 		for (var i = 0; i < processors.length; i++) {

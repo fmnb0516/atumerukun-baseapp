@@ -46,7 +46,7 @@ module.exports = (installer, context) => {
 	installer.upload('/file/upload', "upFile", (req, res) => {
 		const successHandler = createSuccessHandler(req, res);
 
-		const toname = context.pathUtil.dirname(req.file.path) + "/" + req.file.originalname;
+		const toname = context.external("path").dirname(req.file.path) + "/" + req.file.originalname;
 		context.fileSystem.rename(req.file.path, toname)
 			.then(() => successHandler(""));
 	});

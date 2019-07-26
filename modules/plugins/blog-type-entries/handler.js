@@ -74,7 +74,7 @@ const queryBlockData = async (appContext, url, configure) => {
 	const entryTerm = configure["process_target_term"];
 	
 	const response = await appContext.httpclient.wget(url);
-	const $ = appContext.cheerio.load(response.buffer.toString("utf8"));
+	const $ = appContext.external("cheerio").load(response.buffer.toString("utf8"));
 
 	console.log(response.buffer.toString("utf8"));
 	const blocks = [];
@@ -96,7 +96,7 @@ const queryBlockData = async (appContext, url, configure) => {
 };
 
 const prepareUrl = (appContext, from, next) => {
-	const fromUrl = appContext.urlObj.parse(from);
+	const fromUrl = appContext.external("url").parse(from);
 	if(next.startsWith("http://") || next.startsWith("https://")) {
 		return next;
 	} else if(next.startsWith("/")) {

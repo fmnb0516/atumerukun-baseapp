@@ -7,7 +7,7 @@ module.exports = (installer, appContext, logger) => {
 		const youtubedl = configure["youtubedl_cmd_path"] ? configure["youtubedl_cmd_path"] : "youtube-dl.py";
 		const key = configure["result_key"] ? configure["result_key"] : "media";
 		
-		const filename = appContext.uuid.v4() + ".mp4"; 
+		const filename = appContext.external("uuid").v4() + ".mp4"; 
 		const output = appContext.baseDir + "/storage/" + filename;
 		const url = chain.getUrl();
 		
