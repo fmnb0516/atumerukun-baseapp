@@ -105,7 +105,7 @@ const parseCalender = (result) => {
                 entries : month
             };
         });
-        
+
     return calender;
 };
 
@@ -244,6 +244,25 @@ const regenerateTags = async (context, configure, db, moduleDir, template1, temp
     return Promise.all(futures);
 };
 
+const regenerateCalenderNavigations = async (context, configure, db, moduleDir, template) => {
+    const calender = await selectQuery(db, "SELECT caldata FROM post_data GROUP BY caldata", [])
+   
+    const futures = [];
+    for(var i=0; i<calender.length; i++) {
+        const cal =calender[i].caldata;
+        
+        const f = selectQuery(db, "SELECT post_id, title, create_at, description, tags, thumbnail FROM post_data WHERE caldata = ? ORDER BY create_at DESC", [cal])
+            .then(result => {
+                const prefix = "archive/" + cal;
+                return regenerateNavigations(context, configure, db, moduleDir, prefix, template, result, cal)
+                .then(console.log("complete archive generate : " + cal));
+            });
+
+    }
+
+    return Promise.all(futures);
+};
+
 const generateIndexPage = async (context, configure, db, moduleDir, template) => {
     const html = template({
         configure : configure
@@ -306,6 +325,7 @@ module.exports = async (installer, context) => {
             .then(resuls => resuls.filter(r => r.update))
             .then(result => regenerateArticles(context, configure, db, moduleDir, templates["article.html.hbs"], result))
             .then(() => regeneratePageNavigations(context, configure, db, moduleDir, templates["navi.html.hbs"]))
+            .then(() => regenerateCalenderNavigations(context, configure, db, moduleDir, templates["navi.html.hbs"]))
             .then(() => regenerateTags(context, configure, db, moduleDir, templates["navi.html.hbs"], templates["alltags.html.hbs"]))
             .then(() => generateIndexPage(context, configure, db, moduleDir, templates["index.html.hbs"]));
     };
