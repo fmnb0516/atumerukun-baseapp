@@ -178,9 +178,9 @@ const regenerateDatabase = async (context, db, dir, file) => {
 };
 
 const regenerateArticles = async (context, configure, db, moduleDir, template, entries) => {
-    const tags = await selectQuery(db, "SELECT tag, COUNT(*) AS cnt FROM tag_data GROUP BY tag HAVING (COUNT(*) > 1) ORDER BY cnt DESC LIMIT ?", [20]);
+    const tags = await selectQuery(db, "SELECT tag, COUNT(*) AS cnt FROM tag_data GROUP BY tag ORDER BY cnt DESC LIMIT ?", [20]);
     const newest = await selectQuery(db, "SELECT post_id, title, create_at FROM post_data ORDER BY create_at DESC LIMIT ?", [5]);
-    const calender = parseCalender(await selectQuery(db, "SELECT caldata, COUNT(*) AS cnt FROM post_data GROUP BY caldata HAVING (COUNT(*) > 1)", []));
+    const calender = parseCalender(await selectQuery(db, "SELECT caldata, COUNT(*) AS cnt FROM post_data GROUP BY caldata", []));
     
     await context.fileSystem.mkdirs(moduleDir + "/_public/post/");
     await context.fileSystem.mkdirs(moduleDir + "/_public/assets/");
@@ -206,9 +206,9 @@ const regenerateArticles = async (context, configure, db, moduleDir, template, e
 
 const regenerateNavigations = async (context, configure, db, moduleDir, prefix, template, result, title) => {
     const futures = [];
-    const tags = await selectQuery(db, "SELECT tag, COUNT(*) AS cnt FROM tag_data GROUP BY tag HAVING (COUNT(*) > 1) ORDER BY cnt DESC LIMIT ?", [20]);
+    const tags = await selectQuery(db, "SELECT tag, COUNT(*) AS cnt FROM tag_data GROUP BY tag ORDER BY cnt DESC LIMIT ?", [20]);
     const newest = await selectQuery(db, "SELECT post_id, title, create_at FROM post_data ORDER BY create_at DESC LIMIT ?", [5]);
-    const calender = parseCalender(await selectQuery(db, "SELECT caldata, COUNT(*) AS cnt FROM post_data GROUP BY caldata HAVING (COUNT(*) > 1)", []));
+    const calender = parseCalender(await selectQuery(db, "SELECT caldata, COUNT(*) AS cnt FROM post_data GROUP BY caldata", []));
 
     const subarray = chunk(10, result);
 
@@ -245,8 +245,9 @@ const regeneratePageNavigations = async (context, configure, db, moduleDir, temp
 };
 
 const regenerateTags = async (context, configure, db, moduleDir, template1, template2) => {
-    const tags = await selectQuery(db, "SELECT tag, COUNT(*) AS cnt FROM tag_data GROUP BY tag HAVING (COUNT(*) > 1) ORDER BY cnt DESC", []);
+    const tags = await selectQuery(db, "SELECT tag, COUNT(*) AS cnt FROM tag_data GROUP BY tag ORDER BY cnt DESC", []);
     await context.fileSystem.mkdirs(moduleDir + "/_public/tags");
+
 
     const futures = [];
     for(var i=0; i<tags.length; i++) {
