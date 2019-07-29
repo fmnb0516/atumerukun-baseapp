@@ -40,7 +40,9 @@
 			<div class="row">
 				<div class="col-lg-12" style="padding: 10px;">
 					<a href="updatewebcrawler.html" class="btn btn-info">New</a>
+					<button id="sitegen" class="btn btn-info">Generate Site</a>
 				</div>
+
 			</div>
 			<div class="row">
 				<div class="col-lg-12">
@@ -96,6 +98,18 @@
 					var html = app.render("template", crawlers);
 					$("#crawlers tbody").html(html);
 				};
+
+				$(document).on("click", "#sitegen", function() {
+					application.confirm(true, "サイトを生成します", function() {
+						application.request({
+							method : "POST",
+							url : "../sitegenerator/all"
+						}).then(function() {
+							application.toast("info", "サイトを生成しました。");
+						});
+					});
+
+				});
 				
 				$(document).on("click", ".delete-crawler", function() {
 					var id = $(this).attr("targetid");

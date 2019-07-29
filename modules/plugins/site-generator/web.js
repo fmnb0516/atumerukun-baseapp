@@ -8,6 +8,23 @@ const createSuccessHandler = (req, res) => {
 	};
 };
 
+const resolve = (map, key) => {
+	var data = map[key];
+	if(data === undefined || data === null) {
+			return [""];
+	} else {
+			return data.map(d => d.data_value);
+	}
+};
+
+const dateformat = (d) => {
+	return d.getFullYear() + "/" + (d.getMonth() + 1) + "/" + d.getDate() + ""
+	+ " "
+	+ ( '0' + d.getHours() ).slice(-2) + ":"
+	+ ( '0' + d.getMinutes() ).slice(-2) + ":"
+	+ "00";
+};
+
 const md5 = (context, text) => {
     const md5hash = context.external('crypto').createHash('md5');
     md5hash.update(text, 'binary');
