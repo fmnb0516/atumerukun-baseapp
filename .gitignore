@@ -1,3 +1,4 @@
 /db/sqlite3.db
 /storage/*.*
 
+/modules/plugins/site-generator/_source/site.db
