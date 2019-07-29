@@ -69,6 +69,46 @@ const copyResource = async (context, from, to) => {
     return Promise.all(futures);
 };
 
+const parseCalender = (result) => {
+    const map = {};
+
+    for(var i=0; i<result.length; i++) {
+        var year = result[i].caldata.substr(0, 4);
+        var month = result[i].caldata.substr(4);
+
+        if(map[year] === undefined) {
+            map[year] = {};
+        }
+
+        map[year][month] = result[i].cnt;
+    }
+
+    const calender = Object.keys(map).sort((d1, d2) => parseInt(d1) - parseInt(d2))
+        .map(y => {
+            const year = map[y];
+            var allcount = 0;
+
+            var month = Object.keys(year).sort((d1, d2) => parseInt(d2) - parseInt(d1))
+                .map(m => {
+                    allcount += year[m];
+                    return {
+                        count : year[m],
+                        label : y + "年" + m + "月",
+                        cal_id : y + "" + m
+                    }
+                });
+            
+
+            return {
+                label : y + "年",
+                count : allcount,
+                entries : month
+            };
+        });
+        
+    return calender;
+};
+
 const regenerateDatabase = async (context, db, dir, file) => {
     const regexp = /(---)([\s\S]*)(---)/gm;
     const mtime = (await context.fileSystem.stat(dir + "/" + file)).mtime;
@@ -95,8 +135,6 @@ const regenerateDatabase = async (context, db, dir, file) => {
     const createAt = new Date(meta.date);
     
     const calender = createAt.getFullYear() + "" + zeroPadding((createAt.getMonth() + 1), 2);
-    console.log(calender);
-
     futures.push(insertQuery(db, "insert into post_data (post_id, create_at, title, generate_at, description, tags, thumbnail, caldata) values (?,?,?,?,?,?,?,?)", [postId, new Date(meta.date).getTime(), meta.title, new Date().getTime(), meta.description, meta.tags.join(","), meta.thumbnail, calender]));
 
     for(var i=0; i<meta.tags.length; i++) {
@@ -115,7 +153,8 @@ const regenerateDatabase = async (context, db, dir, file) => {
 const regenerateArticles = async (context, configure, db, moduleDir, template, entries) => {
     const tags = await selectQuery(db, "SELECT tag, COUNT(*) AS cnt FROM tag_data GROUP BY tag HAVING (COUNT(*) > 1) ORDER BY cnt DESC LIMIT ?", [20]);
     const newest = await selectQuery(db, "SELECT post_id, title, create_at FROM post_data ORDER BY create_at DESC LIMIT ?", [5]);
-
+    const calender = parseCalender(await selectQuery(db, "SELECT caldata, COUNT(*) AS cnt FROM post_data GROUP BY caldata HAVING (COUNT(*) > 1)", []));
+    
     await context.fileSystem.mkdirs(moduleDir + "/_public/post/");
     await context.fileSystem.mkdirs(moduleDir + "/_public/assets/");
 
@@ -127,6 +166,7 @@ const regenerateArticles = async (context, configure, db, moduleDir, template, e
             configure : configure,
             newest : newest,
             tags : tags,
+            calender : calender,
             post : entry
         });
         futures.push(context.fileSystem.writeFile(moduleDir + "/_public/post/"+ (entry.postId) + ".html",  html, "utf8"));
@@ -141,6 +181,7 @@ const regenerateNavigations = async (context, configure, db, moduleDir, prefix, 
     const futures = [];
     const tags = await selectQuery(db, "SELECT tag, COUNT(*) AS cnt FROM tag_data GROUP BY tag HAVING (COUNT(*) > 1) ORDER BY cnt DESC LIMIT ?", [20]);
     const newest = await selectQuery(db, "SELECT post_id, title, create_at FROM post_data ORDER BY create_at DESC LIMIT ?", [5]);
+    const calender = parseCalender(await selectQuery(db, "SELECT caldata, COUNT(*) AS cnt FROM post_data GROUP BY caldata HAVING (COUNT(*) > 1)", []));
 
     const subarray = chunk(10, result);
 
@@ -156,6 +197,7 @@ const regenerateNavigations = async (context, configure, db, moduleDir, prefix, 
             configure : configure,
             newest : newest,
             tags : tags,
+            calender : calender,
             entries : entry,
             title : title + " - " + (i+1) + "ページ目",
             navi : {

@@ -45,10 +45,9 @@
 			<li class="closable-list">
 				<i class="glyphicon glyphicon-circle-arrow-down"></i>
 				<i class="glyphicon glyphicon-circle-arrow-right"></i>
-				<a onclick="$(this).parent().toggleClass('closable-list');">{{label}}年({{count}})</a>
+				<a onclick="$(this).parent().toggleClass('closable-list');">{{label}}({{count}})</a>
 				<ul>
 					{{#each entries}}
-					<li><a href="/blog/pages-archive/{{cal_id}}/0.html" >{{label}}({{count}})</a></li>
 					<li><a href="/blog/pages-archive/{{cal_id}}/0.html" >{{label}}({{count}})</a></li>
 					{{/each}}
 				</ul>
