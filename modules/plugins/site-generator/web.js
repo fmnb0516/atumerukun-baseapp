@@ -1,3 +1,13 @@
+const createSuccessHandler = (req, res) => {
+	return (entries) => {
+		res.json({
+			status : 200,
+			message: "",
+			result : entries,
+		});
+	};
+};
+
 const md5 = (context, text) => {
     const md5hash = context.external('crypto').createHash('md5');
     md5hash.update(text, 'binary');
@@ -271,8 +281,18 @@ const generateIndexPage = async (context, configure, db, moduleDir, template) =>
         .then(console.log("complete index generate"));
 };
 
+const initAssetDir = async (context, dir) => {
+    const eixist = await context.fileSystem.exist(dir);
+    if(eixist === true) {
+        await context.fileSystem.remove(dir);
+    }
+    return context.fileSystem.mkdirs(dir);
+};
+
 module.exports = async (installer, context) => {
     const moduleDir = context.baseDir + "/modules/plugins/site-generator";
+    const storageDir = context.baseDir + "/storage";
+    
     const configure = await context.fileSystem.readFile(moduleDir + "/configure.json", 'utf8')
         .then(text => JSON.parse(text));
 
@@ -282,6 +302,7 @@ module.exports = async (installer, context) => {
     const Handlebars = context.external('handlebars');
     const marked = context.external('marked');
     var templates = {};
+    
 
     const templateFiles = (await context.fileSystem.readdir(moduleDir+"/_theme/"+configure.theme)).filter(f => f.endsWith(".hbs"));
     for(var i=0; i<templateFiles.length; i++) {
@@ -347,8 +368,70 @@ module.exports = async (installer, context) => {
     };
     
 
-    await cleanPublicDir();
-    await cleanDatabase();
-    await generateAllPosts();
-    await resourceCopy();
+    installer.post('/publish/:id', (req, res) => {
+        const successHandler = createSuccessHandler(req, res);
+        
+		context.repo.getPageResult(req.params.id)
+			.then(data => {
+				const id = md5(context, data.url);
+				const postFilePath = moduleDir + "/_source/posts/" + id + ".md";
+				const assetDir = moduleDir + "/_source/posts/" + id;
+				return initAssetDir(context, assetDir)
+					.then(() => [id, postFilePath, assetDir, data]);
+			}).then(data => {
+				const textLine = [];
+				const futures = [];
+
+				const id = data[0];
+				const postFilePath = data[1];
+				const assetDir = data[2];
+
+				const metadata = data[3];
+				const images = resolve(metadata.page_values, "image");
+				const title = resolve(metadata.page_values, "title")[0];
+				const category = resolve(metadata.page_values, "category");
+				const description = resolve(metadata.page_values, "description")[0];
+
+				textLine.push("---");
+				textLine.push("title: \"" + title + "\"");
+				textLine.push("date: \"" + dateformat(new Date()) + "\"");
+				textLine.push("thumbnail: \"" + "/assets/"+id+"/"+ images[0] + "\"");
+				textLine.push("tags:");
+				category.forEach(element => {
+					textLine.push("- \"" + element + "\"");
+				});
+				textLine.push("---");
+		
+				textLine.push("");
+
+				for(var i=0; i < images.length; i++) {
+					const f = images[i];
+					textLine.push("!["+f+"](/assets/"+id+"/"+f+")");
+					
+					if(i==0) {
+						textLine.push("<!-- more -->");
+						textLine.push("");
+						textLine.push(description);
+						textLine.push("");
+					}
+					futures.push(context.fileSystem.copy(storageDir + "/" + images[i], assetDir + "/" + images[i]));
+				}
+
+				futures.push(context.fileSystem.writeFile(postFilePath,textLine.join("\r\n"), "utf8"));
+				return Promise.all(futures);
+			}).then(() => successHandler("ok"));
+    });
+    
+    installer.post('/sitegenerator/all', (req, res) => {     
+        cleanPublicDir()
+            .then(() => cleanDatabase())
+            .then(() => generateAllPosts())
+            .then(() => resourceCopy())
+            .then(() => {
+                res.json({
+                    status : 200,
+                    message: ""
+                });
+            });
+    });
 };
