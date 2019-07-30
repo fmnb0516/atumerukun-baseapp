@@ -14,12 +14,6 @@ module.exports = async (appContext) => {
     await appContext.core.fileSystem.mkdirs(postDir);
     await appContext.core.fileSystem.mkdirs(publicDir);
 
-    const md5 = (text) => {
-        const md5hash = appContext.core.external('crypto').createHash('md5');
-        md5hash.update(text, 'binary');
-        return md5hash.digest('hex');
-    };
-
     const db = (() => {
         const sqlite3 = appContext.core.external("sqlite3");
         const database = new sqlite3.Database(dbFile);
@@ -30,39 +24,41 @@ module.exports = async (appContext) => {
         return database;
     })();
 
-    const templates = await (async () => {
-        const Handlebars = appContext.core.external('handlebars');
-        const marked = appContext.core.external('marked');
+    const util = await require("./lib/util.js")(appContext);
+    const templates = await require("./lib/template.js")(appContext, themeDir, util);
+    const sqls = await require("./lib/sql.js")(appContext, util);
 
-        const tpl = {};
-        
-        const templateFiles = (await appContext.core.fileSystem.readdir(themeDir)).filter(f => f.endsWith(".hbs"));
-        for(var i=0; i<templateFiles.length; i++) {
-            const text = await appContext.core.fileSystem.readFile(themeDir + "/" + templateFiles[i], "utf8");
-            tpl[templateFiles[i]] = Handlebars.compile(text);
-        }
-        
-        Handlebars.registerHelper('date', function (val, options) {
-            const d = new Date(val);
-            return d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日";
-        });
-    
-        Handlebars.registerHelper('disabled', function (val, options) {
-            return val ? "" : "disabled";
-        });
-    
-        Handlebars.registerHelper('include', function (file, options) {
-            return new Handlebars.SafeString(tpl[file](this));
-        });
-    
-        Handlebars.registerHelper('hash', function (text) {
-            return md5(text);
-        });
-    
-        Handlebars.registerHelper('marked', function (text, options) {
-            return new Handlebars.SafeString(marked(text));
-        });
+    const resourceCopy = async () => {
+        await util.copyResource(assetDir, publicDir);
+        await util.copyResource(themeDir+"/assets", publicDir);
+    };
 
-        return tpl;
-    })();
+    const cleanDatabase = async () => {
+        const sql =sqls(db);
+        await sql.deleteQuery("DELETE FROM post_data", []);
+        await sql.deleteQuery("DELETE FROM tag_data", []);
+    };
+    
+    const cleanPublicDir = async () => {
+        await appContext.core.fileSystem.remove(moduleDir + "/_public");
+        await appContext.core.fileSystem.mkdirs(moduleDir + "/_public");
+    };
+
+    /*
+    const generateAllPosts = async () => {
+        const sql = new SQLManager(db);
+        
+        const posts = await appContext.core.fileSystem.readdir(postDir);    
+        const futures = posts.filter(f => f.endsWith(".md"))
+            .map(f => regenerateDatabase(context, db, postDir, f));
+        
+        return Promise.all(futures)
+            .then(resuls => resuls.filter(r => r.update))
+            .then(result => regenerateArticles(context, configure, db, moduleDir, templates["article.html.hbs"], result))
+            .then(() => regeneratePageNavigations(context, configure, db, moduleDir, templates["navi.html.hbs"]))
+            .then(() => regenerateCalenderNavigations(context, configure, db, moduleDir, templates["navi.html.hbs"]))
+            .then(() => regenerateTags(context, configure, db, moduleDir, templates["navi.html.hbs"], templates["alltags.html.hbs"]))
+            .then(() => generateIndexPage(context, configure, db, moduleDir, templates["index.html.hbs"]));
+    };
+    */
 };
