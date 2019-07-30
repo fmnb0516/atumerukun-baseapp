@@ -49,7 +49,94 @@ module.exports = async (appContext, util, templates, dirs) => {
             this.posts = posts;
         };
 
+        async regenerateNavigations(prefix, result, title) {
+            const tags = await this.sql.selectQuery("SELECT tag, COUNT(*) AS cnt FROM tag_data GROUP BY tag ORDER BY cnt DESC LIMIT ?", [20]);
+            const newest = await this.sql.selectQuery("SELECT post_id, title, create_at FROM post_data ORDER BY create_at DESC LIMIT ?", [5]);
+            const calender = parseCalender(await this.sql.selectQuery("SELECT caldata, COUNT(*) AS cnt FROM post_data GROUP BY caldata", []));
+            
+            const subarray = util.chunk(10, result);
+            await appContext.core.fileSystem.mkdirs(dirs.publicDir +"/" + prefix);
+
+            for(var i=0; i<subarray.length; i++) {
+                const entry = subarray[i].map(e => {
+                    e.tags = e.tags.split(",");
+                    return e;
+                });
+        
+                const html = templates("navi.html.hbs", {
+                    configure : appContext.core.configure,
+                    newest : newest,
+                    tags : tags,
+                    calender : calender,
+                    entries : entry,
+                    title : title + " - " + (i+1) + "ページ目",
+                    navi : {
+                        next : (i+1) < subarray.length ? "/"+prefix+"/" + (i+1) + ".html" : null,
+                        prev : i == 0 ? null : "/"+prefix+"/" + (i-1) + ".html"
+                    }
+                });
+                await appContext.core.fileSystem.writeFile(dirs.publicDir + "/" +prefix+ "/"+ i + ".html",  html, "utf8");
+            }
+        };
+
+        async regeneratePageNavigations() {
+            logger.info("---- begin regenerate navigation ----");
+
+            const entries = await this.sql.selectQuery("SELECT post_id, title, create_at, description, tags, thumbnail FROM post_data ORDER BY create_at DESC", []);
+            await this.regenerateNavigations("navi", entries, "新着記事");
+
+            logger.info("---- end regenerate navigation ----");
+        };
+
+        async regenerateTags() {
+            logger.info("---- begin regenerate tag navigation ----");
+
+            const tags = await this.sql.selectQuery("SELECT tag, COUNT(*) AS cnt FROM tag_data GROUP BY tag ORDER BY cnt DESC", []);
+            await appContext.core.fileSystem.mkdirs(dirs.publicDir + "/tags");
+
+            for(var i=0; i<tags.length; i++) {
+                const tag =tags[i].tag;
+
+                logger.info("    - generate tag naviagtion start : " +  tag);
+                const result = await this.sql.selectQuery("SELECT tag_data.tag, post_data.tags, post_data.description, post_data.title, post_data.thumbnail, post_data.post_id, post_data.create_at FROM tag_data INNER JOIN post_data on post_data.post_id=tag_data.post_id WHERE tag_data.tag = ? ORDER BY post_data.create_at DESC", [tag]);
+                const prefix = "tags/" + util.md5(tag);
+                await this.regenerateNavigations(prefix, result, tag);
+                logger.info("    - generate tag naviagtion end : " +  tag);
+            }
+
+            logger.info("    - generate all tag page start");
+            const html = templates("alltags.html.hbs", {
+                configure : appContext.core.configure,
+                tags : tags
+            });
+            await appContext.core.fileSystem.writeFile(dirs.publicDir + "/tags/list.html",  html, "utf8");
+            logger.info("    - generate all tag page end");
+
+            logger.info("---- end regenerate tag navigation ----");
+        };
+
+        async regenerateCalenderNavigations() {
+            logger.info("---- begin regenerate archive navigation ----");
+
+            const calender = await this.sql.selectQuery("SELECT caldata FROM post_data GROUP BY caldata", []);
+            for(var i=0; i<calender.length; i++) {
+                const cal =calender[i].caldata;
+                
+                logger.info("    - generate tag archive start : " +  cal);
+
+                const result = await this.sql.selectQuery("SELECT post_id, title, create_at, description, tags, thumbnail FROM post_data WHERE caldata = ? ORDER BY create_at DESC", [cal])
+                const prefix = "archive/" + cal;
+                await this.regenerateNavigations(prefix, result, cal);
+
+                logger.info("    - generate tag archive end : " +  cal);
+            }
+
+            logger.info("---- end regenerate archive navigation ----");
+        };
+
         async regenerateArticles(posts) {
+            logger.info("---- begin regenerate articles ----");
+
             posts = posts ? posts : this.posts;
 
             const tags = await this.sql.selectQuery("SELECT tag, COUNT(*) AS cnt FROM tag_data GROUP BY tag ORDER BY cnt DESC LIMIT ?", [20], true);
@@ -61,12 +148,15 @@ module.exports = async (appContext, util, templates, dirs) => {
 
             for(var i=0; i<posts.length; i++) {
                 const file = posts[i];
+                logger.info("    - regenerate article entry start : " + file);
 
+                logger.info("    - parsing metadata : " + file);
                 const postId = appContext.core.external("path").basename(file, ".md");
                 const text = await appContext.core.fileSystem.readFile(dirs.postDir + "/" + file, "utf8");
                 const match =  /(---)([\s\S]*)(---)/gm.exec(text);
                 const meta = appContext.core.external("js-yaml").safeLoad(match !== null ? match[2].trim() : {});
                 
+                logger.info("    - generate html : " + file);
                 const html = templates("article.html.hbs", {
                     configure : appContext.core.configure,
                     newest : newest,
@@ -79,9 +169,14 @@ module.exports = async (appContext, util, templates, dirs) => {
                     }
                 });
 
+                logger.info("    - write generate html : " + file);
                 await appContext.core.fileSystem.writeFile(dirs.publicDir + "/post/"+ postId + ".html",  html, "utf8");
+                logger.info("    - copy post asset : " + dirs.postDir + "/" + postId, dirs.publicDir + " => " + dirs.publicDir + "/assets/" + postId);
                 await util.copyResource(dirs.postDir + "/" + postId, dirs.publicDir + "/assets/" + postId);
+                logger.info("    - regenerate article entry end : " + file);
             }
+
+            logger.info("---- end regenerate articles ----");
         };
 
         async regenerateDatabase() {

@@ -56,18 +56,10 @@ module.exports = async (appContext) => {
 
         await site.regenerateDatabase();
         await site.regenerateArticles();
-        
-         /*  
-        const futures = posts.filter(f => f.endsWith(".md"))
-            .map(f => regenerateDatabase(context, db, postDir, f));
-        return Promise.all(futures)
-            .then(resuls => resuls.filter(r => r.update))
-            .then(result => regenerateArticles(context, configure, db, moduleDir, templates["article.html.hbs"], result))
-            .then(() => regeneratePageNavigations(context, configure, db, moduleDir, templates["navi.html.hbs"]))
-            .then(() => regenerateCalenderNavigations(context, configure, db, moduleDir, templates["navi.html.hbs"]))
-            .then(() => regenerateTags(context, configure, db, moduleDir, templates["navi.html.hbs"], templates["alltags.html.hbs"]))
-            .then(() => generateIndexPage(context, configure, db, moduleDir, templates["index.html.hbs"]));
-        */
+        await site.regeneratePageNavigations();
+        await site.regenerateCalenderNavigations();
+        await site.regenerateTags();
+         //generateIndexPage(context, configure, db, moduleDir, templates["index.html.hbs"])
     };
 
     await cleanDatabase();
