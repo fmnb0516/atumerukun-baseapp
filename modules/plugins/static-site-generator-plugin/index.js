@@ -96,7 +96,14 @@ module.exports = async (appContext) => {
 
         context.repo.getPageResult(req.params.id)
             .then(data => storePageResult(data))
-            .then(() => successHandler("ok"));
+            .then(() => successHandler("解析結果を公開しました"));
     });
 
+    appContext.event.on("admin-ui-plugin.initialize-btn.pageresult", (e) => {
+        e.context.push({
+            label : "公開",
+            url   : "/static-site-generator-plugin/publish/${pagevalue_id}",
+            method: "POST"
+        });
+    });
 };
