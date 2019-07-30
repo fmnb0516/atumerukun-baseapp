@@ -171,7 +171,7 @@ module.exports = (appContext) => {
 		const successHandler = createSuccessHandler(req, res);
 		const errorHandler = createErrorHandler(req, res);
 		
-		appContext.repo.getPageResult(req.params.id)
+		appContext.core.repo.getPageResult(req.params.id)
 			.then(successHandler, errorHandler);
 	});
 	

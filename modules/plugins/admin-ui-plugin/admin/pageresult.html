@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ja">
+	<head>
+		<meta charset="utf-8">
+		<title>Atumerukun Admin Ui</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<link rel="stylesheet" href="lib/bootstrap/css/bootstrap.minty.min.css" media="screen">
+		<link rel="stylesheet" href="lib/toast/toast.css" media="screen">
+	</head>
+	<body>
+		
+		<div class="navbar navbar-expand-lg fixed-top navbar-dark bg-primary">
+			<div class="container">
+				<a href="#" class="navbar-brand">Atumerukun Admin Ui</a>
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				
+				<div class="collapse navbar-collapse" id="navbarResponsive">
+					<ul class="navbar-nav">
+						<li class="nav-item">
+							<a class="nav-link" href="webcrawlers.html">Crawlers</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="pageresults.html">Results</a>
+						</li>
+					</ul>
+					
+					<ul class="nav navbar-nav ml-auto">
+						<li class="nav-item">
+							<a class="nav-link" href="#" target="_blank">Atumerukun Admin Ui</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="container" style="padding-top: 80px;" id="contents">
+		</div>
+
+		<div class="modal" tabindex="-1" role="dialog" id="update-pagevalue-modal">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Update pageValue</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						
+						<div class="modal-body">
+							<input type="hidden" id="data_id_input" />
+							
+							<div class="form-group">
+								<label for="data_key_input">Data Key</label>
+								<input type="text" class="form-control" id="data_key_input" aria-describedby="" placeholder="">
+							</div>
+
+							<div class="form-group">
+								<label for="data_value_input">Data Value</label>
+								<input type="text" class="form-control" id="data_value_input" aria-describedby="" placeholder="">
+							</div>
+
+							<div class="form-group">
+								<label for="data_type_input">Data Type</label>
+								<input type="text" class="form-control" id="data_type_input" aria-describedby="" placeholder="">
+							</div>
+
+							<div class="form-group">
+								<label for="data_sort_input">Sort No</label>
+								<input type="number" class="form-control" id="data_sort_input" aria-describedby="" placeholder="">
+							</div>
+							
+						</div>
+						
+						<div class="modal-footer">
+							<button id="update-pagevalue-btn" type="button" class="btn btn-info">OK</button>
+							<button type="button" class="btn btn-success" data-dismiss="modal">Cancel</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		<script type="text/x-handlebars-template" id="template">
+			<div class="row">
+				<div class="col-lg-12">
+					<!--<button id="publishbtn" type="button" class="btn btn-primary">公開</button>-->
+					<button id="download" type="button" class="btn btn-primary">Download Zip</button>
+					<button id="create-page-value-btn" type="button" class="btn btn-primary">新規</button>
+
+					<br/><br/>
+
+					<ul class="nav nav-tabs">
+						{{#each page_values}}
+						<li class="nav-item">
+							<a class="nav-link" data-toggle="tab" href="#{{@key}}">{{@key}}</a>
+						</li>
+						{{/each}}
+					</ul>
+  
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12">
+					<div id="myTabContent" class="tab-content">
+						{{#each page_values}}
+						<div class="tab-pane" id="{{@key}}" style="padding: 10px;">
+							<ul class="list-group">
+								{{#each this}}
+								<li data-id="{{id}}" data-type="{{data_type}}"  data-key="{{data_key}}" data-value="{{data_value}}" data-sort="{{sort}}" class="list-group-item d-flex justify-content-between align-items-center">
+									<div style="width: 100%;">
+										<div style="text-align: right;position: absolute;right: 10px;">
+											<button type="button" class="delete-value-btn btn btn-danger btn-sm">削除</button>
+											<button type="button" class="update-value-btn btn btn-primary btn-sm">更新</button>
+										</div>
+										{{#equals data_type "image"}}
+										<img style="margin: 0 auto;width: 100%;" src="../../storage/{{data_value}}"/>
+										{{else}}
+										{{data_value}}
+										{{/equals}}
+									</div>
+								</li>
+								{{/each}}
+							</ul>
+						</div>
+						{{/each}}
+					</div>
+				</div>
+			</div>
+		</script>
+
+		<script type="text/javascript" src="lib/jquery/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript" src="lib/handlebars/handlebars-v4.1.0.js"></script>
+		<script type="text/javascript" src="lib/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="lib/toast/toast.js"></script>
+		<script type="text/javascript" src="lib/jszip/jszip.min.js"></script>
+		<script type="text/javascript" src="lib/md5/md5.js"></script>
+		<script type="text/javascript" src="lib/app/application.js"></script>
+
+		<script type="text/javascript">
+			$(function() {
+				var resultData = null;
+				var app = application.create();
+				
+				function getQuery(key, def) {
+					var vars = [], max = 0, hash = "", array = "";
+					var url = window.location.search;
+					
+					var hash  = url.slice(1).split('&');    
+					var max = hash.length;
+					
+					for (var i = 0; i < max; i++) {
+						array = hash[i].split('='); 
+						vars.push(array[0]);
+						vars[array[0]] = array[1];
+					}
+					
+					return vars[key] ? vars[key] : def; 
+				};
+				
+				function hash(str) {
+					return CybozuLabs.MD5.calc(str);
+				};
+				
+				function now() {
+					var d = new Date();
+					return d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日"
+					+ "-"
+					+ ( '0' + d.getHours() ).slice(-2) + "時"
+					+ ( '0' + d.getMinutes() ).slice(-2) + "分";
+				};
+				
+				var reloadAllData = (function() {
+					function reload(results) {
+						var html = app.render("template", results);
+						$("#contents").html(html);
+					};
+
+					var id = getQuery("id", "");
+					var baseurl = "../../basic-rest-api-plugin/pageresult/" + id;
+
+					return function(callback) {
+						application.request({
+							method : "GET",
+							url : baseurl
+						}).then(function(data) {
+							resultData = data.result;
+							reload(data.result);
+							callback();
+						});
+					};
+				})();
+				
+				function createDlPromise(originalUrl, zip) {
+					return new Promise(function(resolve, reject){
+						var xhr = new XMLHttpRequest();
+						xhr.open('GET', originalUrl, true);
+						xhr.responseType = 'arraybuffer';
+						
+						xhr.addEventListener('load', function() {
+							var f = originalUrl.match(".+/(.+?)([\?#;].*)?$")[1];
+							zip.file(f, xhr.response);
+							resolve(f);
+						});
+						xhr.send();
+					});
+				};
+				
+				$(document).on("click", ".delete-value-btn", function(e) {
+					var value_id = $(this).parents("li").attr("data-id");
+					application.confirm(true, "削除します", function() {
+						var opt = {method:"DELETE", url:"../../basic-rest-api-plugin/pagevalue//"+value_id};
+						application.request(opt)
+							.then(function(resp) {
+								if(resp.status === 200) {
+									application.toast("info", "解析結果を削除しました。");
+									reloadAllData(function() {
+										application.toast("info", "解析結果を再読み込みしました。");
+									});
+								}
+						});
+
+					});
+				});
+
+				$(document).on("click", ".update-value-btn", function(e) {
+					var container = $(this).parents("li");
+
+					$("#data_id_input").val(container.attr("data-id"));
+					$("#data_key_input").val(container.attr("data-key"));
+					$("#data_value_input").val(container.attr("data-value"));
+					$("#data_type_input").val(container.attr("data-type"));
+					$("#data_sort_input").val(container.attr("data-sort"));
+
+					$("#update-pagevalue-modal").modal("show");
+				});
+
+				$(document).on("click", "#create-page-value-btn", function(e) {
+					$("#data_id_input").val("");
+					$("#data_key_input").val("");
+					$("#data_value_input").val("");
+					$("#data_type_input").val("");
+					$("#data_sort_input").val("");
+
+					$("#update-pagevalue-modal").modal("show");
+				})
+
+				$(document).on("click", "#update-pagevalue-btn", function(e) {
+					var json = {};
+					
+					var value_id = $("#data_id_input").val();
+					var result_id = resultData.id;
+					json.data_key = $("#data_key_input").val();
+					json.data_value = $("#data_value_input").val();
+					json.data_type = $("#data_type_input").val();
+					json.sort = $("#data_sort_input").val();
+					
+					var opt = value_id !== "" ? {method:"PUT", url:"../../basic-rest-api-plugin/pagevalue/"+result_id+"/"+value_id}
+						: {method:"POST",url:"../../basic-rest-api-plugin/pagevalue/"+result_id};
+					opt.data = {
+						type:"json",
+						value:json
+					};
+
+					application.request(opt)
+						.then(function(resp) {
+							if(resp.status === 200) {
+								application.toast("info", "解析結果を更新しました。");
+								reloadAllData(function() {
+									application.toast("info", "解析結果を再読み込みしました。");
+								});
+							}
+							
+						});
+					$("#update-pagevalue-modal").modal("hide");
+				});
+
+				$(document).on("click" ,"#download", function(e) {
+					var zip = new JSZip();
+					var fileName = now() + "-" + hash(resultData.url) + "-pageresult.zip";
+					var promisses = [];
+					
+					for(var k in resultData.page_values) {
+						var d = resultData.page_values[k];
+						
+						for(var i = 0; i<d.length; i++) {
+							if(d[i].data_type !== "image") {
+								continue;
+							}
+							
+							var originalUrl = "../storage/" + d[i].data_value;
+							var promise = createDlPromise(originalUrl, zip);
+							promisses.push(promise);
+						}
+					}
+					
+					zip.file("data.json", JSON.stringify(resultData, null , "\t"));
+					
+					Promise.all(promisses).then(function(){
+						zip.generateAsync({type:"blob"}).then(function (content) {
+							var downLoadLink = document.createElement("a");
+							downLoadLink.download = fileName;
+							downLoadLink.href = URL.createObjectURL(content, {type: "application/zip"});
+							downLoadLink.click();
+						});
+					});
+					
+				});
+
+				/*
+				$(document).on("click" ,"#publishbtn", function(e) {
+					application.confirm(true, "公開しますか", function() {
+						var id = resultData.id;
+						var opt = {method:"POST", url:"../publish/"+id};
+						application.request(opt)
+							.then(function(resp) {
+								if(resp.status === 200) {
+									application.toast("info", "解析結果を公開しました。");
+								}
+							});
+					});
+				});
+				*/
+				
+
+				reloadAllData(function() {});
+			});
+		</script>
+	</body>
+</html>
