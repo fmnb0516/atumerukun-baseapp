@@ -27,6 +27,12 @@ module.exports = async (appContext) => {
     const util = await require("./lib/util.js")(appContext);
     const templates = await require("./lib/template.js")(appContext, themeDir, util);
     const sqls = await require("./lib/sql.js")(appContext, util);
+    const sitegen = await require("./lib/sitegen.js")(appContext, util, templates, {
+        assetDir : assetDir,
+        postDir : postDir,
+        themeDir : themeDir,
+        publicDir : publicDir
+    });
 
     const resourceCopy = async () => {
         await util.copyResource(assetDir, publicDir);
@@ -40,18 +46,20 @@ module.exports = async (appContext) => {
     };
     
     const cleanPublicDir = async () => {
-        await appContext.core.fileSystem.remove(moduleDir + "/_public");
-        await appContext.core.fileSystem.mkdirs(moduleDir + "/_public");
+        await appContext.core.fileSystem.remove(publicDir);
+        await appContext.core.fileSystem.mkdirs(publicDir);
     };
 
-    /*
     const generateAllPosts = async () => {
-        const sql = new SQLManager(db);
+        const posts = await appContext.core.fileSystem.readdir(postDir);
+        const site = sitegen(sqls(db), posts.filter(f => f.endsWith(".md")));
+
+        await site.regenerateDatabase();
+        await site.regenerateArticles();
         
-        const posts = await appContext.core.fileSystem.readdir(postDir);    
+         /*  
         const futures = posts.filter(f => f.endsWith(".md"))
             .map(f => regenerateDatabase(context, db, postDir, f));
-        
         return Promise.all(futures)
             .then(resuls => resuls.filter(r => r.update))
             .then(result => regenerateArticles(context, configure, db, moduleDir, templates["article.html.hbs"], result))
@@ -59,6 +67,11 @@ module.exports = async (appContext) => {
             .then(() => regenerateCalenderNavigations(context, configure, db, moduleDir, templates["navi.html.hbs"]))
             .then(() => regenerateTags(context, configure, db, moduleDir, templates["navi.html.hbs"], templates["alltags.html.hbs"]))
             .then(() => generateIndexPage(context, configure, db, moduleDir, templates["index.html.hbs"]));
+        */
     };
-    */
+
+    await cleanDatabase();
+    await cleanPublicDir();
+    await resourceCopy();
+    await generateAllPosts();
 };
