@@ -1,0 +1,61 @@
+
+<p>entry</p>
+<div style='padding: 10px;'>
+    <div class="form-group">
+        <label for="{{uuid}}-selector_for_block">selector for block</label>
+        <input value="{{data.selector_for_block}}" type="text" class="form-control" id="{{uuid}}-selector_for_block" aria-describedby="{{uuid}}-selector_for_block-help" name="selector_for_block">
+        <small id="{{uuid}}-selector_for_block-help" class="form-text text-muted">input entry block selector</small>
+    </div>
+
+    <div class="form-group">
+        <label for="{{uuid}}-selector_for_link">selector for link</label>
+        <input value="{{data.selector_for_link}}" type="text" class="form-control" id="{{uuid}}-selector_for_link" aria-describedby="{{uuid}}-selector_for_link-help" name="selector_for_link">
+        <small id="{{uuid}}-selector_for_link-help" class="form-text text-muted">input detail page link selector</small>
+    </div>
+
+    <div class="form-group">
+        <label for="{{uuid}}-selector_for_update">selector for update</label>
+        <input value="{{data.selector_for_update}}" type="text" class="form-control" id="{{uuid}}-selector_for_update" aria-describedby="{{uuid}}-selector_for_update-help" name="selector_for_update">
+        <small id="{{uuid}}-selector_for_update-help" class="form-text text-muted">input detail page last modified date selector</small>
+    </div>
+
+    <div class="form-group">
+        <label for="{{uuid}}-entry_update_format">entry update format</label>
+        <input value="{{data.entry_update_format}}" type="text" class="form-control" id="{{uuid}}-entry_update_format" aria-describedby="{{uuid}}-entry_update_format-help" name="entry_update_format">
+        <small id="{{uuid}}-entry_update_format-help" class="form-text text-muted">input detail page last modified date format</small>
+    </div>
+
+    <div class="form-group">
+        <label for="{{uuid}}-process_target_term">process target term</label>
+        <input value="{{data.process_target_term}}" type="text" class="form-control" id="{{uuid}}-process_target_term" aria-describedby="{{uuid}}-process_target_term-help" name="process_target_term">
+        <small id="{{uuid}}-process_target_term-help" class="form-text text-muted">input target entry term(-1 is all avaival entries)</small>
+    </div>
+
+    <div class="form-group">
+        <label for="{{uuid}}-max_process_entry_count">max process entry count</label>
+        <input value="{{data.max_process_entry_count}}" type="text" class="form-control" id="{{uuid}}-max_process_entry_count" aria-describedby="{{uuid}}-max_process_entry_count-help" name="max_process_entry_count">
+        <small id="{{uuid}}-max_process_entry_count-help" class="form-text text-muted">input max process count(-1 is no limit)</small>
+    </div>
+</div>
+
+<p>navigation</p>
+<div style='padding: 10px;'>
+    <div class="form-group">
+        <label for="{{uuid}}-selector_for_next_page">selector for nextpage</label>
+        <input value="{{data.selector_for_next_page}}" type="text" class="form-control" id="{{uuid}}-selector_for_next_page" aria-describedby="{{uuid}}-selector_for_next_page-help" name="selector_for_next_page">
+        <small id="{{uuid}}-selector_for_next_page-help" class="form-text text-muted">input next entry page link selector</small>
+    </div>
+    <div class="form-group">
+        <label for="{{uuid}}-max_process_page_count">max process page count</label>
+        <input value="{{data.max_process_page_count}}" type="text" class="form-control" id="{{uuid}}-max_process_page_count" aria-describedby="{{uuid}}-max_process_page_count-help" name="max_process_page_count">
+        <small id="{{uuid}}-max_process_page_count-help" class="form-text text-muted">input max entry page count(-1 is no limit)</small>
+    </div>
+
+    <div class="form-check">
+        <label class="form-check-label">
+            <input class="form-check-input" type="checkbox" value="" checked="{{check data.is_continuation_nodata}}" name="is_continuation_nodata">
+            is continuation nodata
+        </label>
+        <small id="{{uuid}}-is_continuation_nodata-help" class="form-text text-muted">is process entries is no data, stop page process</small>
+    </div>
+</div>

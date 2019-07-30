@@ -1,0 +1,42 @@
+
+<p>split</p>
+<div style='padding: 10px;'>
+    <button type="button" class="btn btn-primary page-data-resolve-add-btn">追加</button>
+    <br/>
+    <br/>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>dkey</th>
+                <th>selector for block</th>
+                <th>attr</th>
+                <th>mode</th>
+                <th>-</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each data.processors}}
+            <tr>
+                <td>
+                    <input value="{{dkey}}" type="text" class="form-control" name="dkey">
+                </td>
+                <td>
+                    <input value="{{selector}}" type="text" class="form-control" name="selector">
+                </td>
+                <td>
+                    <input value="{{attr}}" type="text" class="form-control" name="attr">
+                </td>
+                <td>
+                    <select class="form-control" name="mode">
+                        <option {{select mode 'NONE'}} value="">NONE</option>
+                        <option {{select mode 'download'}} value="download">Download</option>
+                    </select>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-outline-danger page-data-resolve-delete-btn">削除</button>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>

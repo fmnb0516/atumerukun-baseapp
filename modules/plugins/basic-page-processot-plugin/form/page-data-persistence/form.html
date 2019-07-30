@@ -1,0 +1,31 @@
+
+<p>typeHint</p>
+<div style='padding: 10px;'>
+    <button type="button" class="btn btn-primary page-data-persistence-add-btn">追加</button>
+    <br/>
+    <br/>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>key</th>
+                <th>value</th>
+                <th>-</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each data.typeHint}}
+            <tr>
+                <td>
+                    <input value="{{key}}" type="text" class="form-control" name="key">
+                </td>
+                <td>
+                    <input value="{{value}}" type="text" class="form-control" name="value">
+                </td>
+                <td>
+                    <button type="button" class="btn btn-outline-danger page-data-persistence-delete-btn">削除</button>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
