@@ -15,14 +15,14 @@
         return data;
     };
     
-    var validatior = function(data) {
+    var valiadtor = function(data) {
         return [];
     };
     
     $('body').trigger('page-processor-form-regsiter', {
         name : "blog-type-entries",
         resolver : resolver,
-        validatior : validatior
+        validatior : valiadtor
     });
 
 })();

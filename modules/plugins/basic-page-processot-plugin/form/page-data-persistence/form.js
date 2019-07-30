@@ -35,14 +35,14 @@
         return {typeHint:typeHint};
     };
     
-    var validatior = function(data) {
+    var valiadtor = function(data) {
         return [];
     };
     
     $('body').trigger('page-processor-form-regsiter', {
         name : "page-data-persistence",
         resolver : resolver,
-        validatior : validatior
+        validatior : valiadtor
     });
 
 })();

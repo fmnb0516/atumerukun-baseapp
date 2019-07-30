@@ -157,9 +157,8 @@
 
 			this.hbs.registerHelper('plugin_configure', function(type, configure) {
 				var uuid = generateUuid();
-
 				application.request({
-					url : "../metadata/load/"+type+"/html",
+					url : metadata[type].template,
 					method : "GET"
 				}).then(function(resp) {
 					var result = hbs.compile(resp)({uuid:uuid, data:configure});
@@ -182,10 +181,8 @@
 		application.create = function(metadata) {
 			metadata = metadata !== undefined ? metadata : {};
 			for(var k in metadata) {
-				if(metadata[k].js === true) {
-					var url = "../metadata/load/"+k+"/js";
-					$("body").append($("<script>", {type:"text/javascript", src:url}));
-				}
+				var url = metadata[k].script;
+				$("body").append($("<script>", {type:"text/javascript", src:url}));
 			}
 
 			var hbs = Handlebars.create();
@@ -204,12 +201,21 @@
 			return data;
 		};
 
+		/*
 		application.registerHandlerForm = function(key, resolver, validation) {
-			application._handler[key] = {
-				resolver : resolver,
-				validation : validation
-			};
+			
 		};
+		*/
+
+		$("body").on("page-processor-form-regsiter", function(e, data) {
+			var key = data.name;
+
+			application._handler[key] = {
+				resolver : data.resolver,
+				validation : data.validator
+			};
+
+		});
 	})();
 	
 	exports.application = application;
