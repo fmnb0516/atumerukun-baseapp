@@ -1,3 +1,13 @@
+const createSuccessHandler = (req, res) => {
+	return (entries) => {
+		res.json({
+			status : 200,
+			message: "",
+			result : entries,
+		});
+	};
+};
+
 module.exports = async (appContext) => {
     const moduleDir = appContext.dir;
     const configure = await appContext.core.fileSystem.readFile(moduleDir + "/configure.json", 'utf8')
@@ -34,6 +44,8 @@ module.exports = async (appContext) => {
         publicDir : publicDir
     });
 
+    const postgen = await require("./lib/postgen.js")(appContext, util);
+
     const resourceCopy = async () => {
         await util.copyResource(assetDir, publicDir);
         await util.copyResource(themeDir+"/assets", publicDir);
@@ -54,16 +66,37 @@ module.exports = async (appContext) => {
         const posts = await appContext.core.fileSystem.readdir(postDir);
         const site = sitegen(sqls(db), posts.filter(f => f.endsWith(".md")));
 
+        await cleanDatabase();
+        await cleanPublicDir();
         await site.regenerateDatabase();
         await site.regenerateArticles();
         await site.regeneratePageNavigations();
         await site.regenerateCalenderNavigations();
         await site.regenerateTags();
-         //generateIndexPage(context, configure, db, moduleDir, templates["index.html.hbs"])
+        await site.generateIndexPage();
+        await resourceCopy();
     };
 
-    await cleanDatabase();
-    await cleanPublicDir();
-    await resourceCopy();
-    await generateAllPosts();
+    const storePageResult = async (data) => {
+        const id = util.md5(data.url);
+        const postFilePath = postDir + "/" + id + ".md";
+        const assetDir = postDir + "/" + id;
+        await util.cleanDir(assetDir);
+
+        await postgen(id, postFilePath, assetDir, data);
+    };
+
+    appContext.webApiInstaller.post('/sitegenerator/all', (req, res) => {  
+        const successHandler = createSuccessHandler(req, res);
+        generateAllPosts().then(() => successHandler("site generated"));
+    });
+
+    appContext.webApiInstaller.post('/publish/:id', (req, res) => {
+        const successHandler = createSuccessHandler(req, res);
+
+        context.repo.getPageResult(req.params.id)
+            .then(data => storePageResult(data))
+            .then(() => successHandler("ok"));
+    });
+
 };

@@ -45,12 +45,21 @@ module.exports = async (appContext) => {
         return md5hash.digest('hex');
     };
 
+    const cleanDir = async (dir) => {
+        const eixist = await appContext.core.fileSystem.exist(dir);
+        if(eixist === true) {
+            await appContext.core.fileSystem.remove(dir);
+        }
+        return appContext.core.fileSystem.mkdirs(dir);
+    };
+
     util.copyResource = copyResource;
     util.md5 = md5;
     util.zeroPadding = zeroPadding;
     util.chunk = chunk;
     util.dateformat = dateformat;
     util.resolve = resolve;
-
+    util.cleanDir = cleanDir;
+    
     return util;
 };

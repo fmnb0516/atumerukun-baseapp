@@ -49,6 +49,15 @@ module.exports = async (appContext, util, templates, dirs) => {
             this.posts = posts;
         };
 
+        async generateIndexPage() {
+            logger.info("---- begin regenerate top index html ----");
+            const html = templates("index.html.hbs", {
+                configure : appContext.core.configure
+            });
+            await appContext.core.fileSystem.writeFile(dirs.publicDir + "/index.html",  html, "utf8");
+            logger.info("---- end regenerate top index html ----");
+        };
+
         async regenerateNavigations(prefix, result, title) {
             const tags = await this.sql.selectQuery("SELECT tag, COUNT(*) AS cnt FROM tag_data GROUP BY tag ORDER BY cnt DESC LIMIT ?", [20]);
             const newest = await this.sql.selectQuery("SELECT post_id, title, create_at FROM post_data ORDER BY create_at DESC LIMIT ?", [5]);
