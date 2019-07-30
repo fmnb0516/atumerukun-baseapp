@@ -29,7 +29,6 @@ module.exports = async (appContext, util) => {
 			}
 			await appContext.core.fileSystem.copy(storageDir + "/" + images[i], assetDir + "/" + images[i])
         }
-        
         await appContext.core.fileSystem.writeFile(postFilePath,textLine.join("\r\n"), "utf8")     
     };
 };
