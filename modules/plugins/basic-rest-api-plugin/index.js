@@ -123,7 +123,7 @@ module.exports = (appContext) => {
 		const successHandler = createSuccessHandler(req, res);
 		const errorHandler = createErrorHandler(req, res);
 		
-		appContext.repo.allWebscraping()
+		appContext.core.repo.allWebscraping()
 			.then(successHandler, errorHandler);
 	});
 	
@@ -131,7 +131,7 @@ module.exports = (appContext) => {
 		const successHandler = createSuccessHandler(req, res);
 		const errorHandler = createErrorHandler(req, res);
 		
-		appContext.repo.getWebscraping(req.params.id)
+		appContext.core.repo.getWebscraping(req.params.id)
 			.then(successHandler, errorHandler);
 	});
 	
@@ -139,7 +139,7 @@ module.exports = (appContext) => {
 		const successHandler = createSuccessHandler(req, res);
 		const errorHandler = createErrorHandler(req, res);
 		
-		appContext.repo.updateWebscraping(req.params.id, req.body)
+		appContext.core.repo.updateWebscraping(req.params.id, req.body)
 			.then(successHandler, errorHandler);
 	});
 	
@@ -147,7 +147,7 @@ module.exports = (appContext) => {
 		const successHandler = createSuccessHandler(req, res);
 		const errorHandler = createErrorHandler(req, res);
 		
-		appContext.repo.removeWebscraping(req.params.id)
+		appContext.core.repo.removeWebscraping(req.params.id)
 			.then(successHandler, errorHandler);
 	});
 	
@@ -155,7 +155,7 @@ module.exports = (appContext) => {
 		const successHandler = createSuccessHandler(req, res);
 		const errorHandler = createErrorHandler(req, res);
 		
-		appContext.repo.createWebscraping(req.body)
+		appContext.core.repo.createWebscraping(req.body)
 			.then(successHandler, errorHandler);
 	});
 	
@@ -163,7 +163,7 @@ module.exports = (appContext) => {
 		const successHandler = createSuccessHandler(req, res);
 		const errorHandler = createErrorHandler(req, res);
 		
-		appContext.repo.allPageResult(req.query.web_scraping_id, req.query.offset, req.query.limit)
+		appContext.core.repo.allPageResult(req.query.web_scraping_id, req.query.offset, req.query.limit)
 			.then(successHandler, errorHandler);
 	});
 	
@@ -187,7 +187,7 @@ module.exports = (appContext) => {
 		const successHandler = createSuccessHandler(req, res);
 		const errorHandler = createErrorHandler(req, res);
 		
-		appContext.repo.createPageValue(req.params.id, req.body)
+		appContext.core.repo.createPageValue(req.params.id, req.body)
 			.then(successHandler, errorHandler);
 	});
 
@@ -195,7 +195,7 @@ module.exports = (appContext) => {
 		const successHandler = createSuccessHandler(req, res);
 		const errorHandler = createErrorHandler(req, res);
 		
-		appContext.repo.updatePageValue(req.params.rid, req.params.vid, req.body)
+		appContext.core.repo.updatePageValue(req.params.rid, req.params.vid, req.body)
 			.then(successHandler, errorHandler);
 	});
 
@@ -203,7 +203,7 @@ module.exports = (appContext) => {
 		const successHandler = createSuccessHandler(req, res);
 		const errorHandler = createErrorHandler(req, res);
 		
-		appContext.repo.removePageValue(req.params.id)
+		appContext.core.repo.removePageValue(req.params.id)
 			.then(successHandler, errorHandler);
     });
     

@@ -18,7 +18,7 @@ module.exports = (appContext) => {
     };
 
     const prepareUrl = (from, next) => {
-        const fromUrl = appContext.external("url").parse(from);
+        const fromUrl = appContext.core.external("url").parse(from);
         if(next.startsWith("http://") || next.startsWith("https://")) {
             return next;
         } else if(next.startsWith("/")) {
@@ -40,8 +40,8 @@ module.exports = (appContext) => {
         const selectorEntryUpdate = configure["selector_for_update"];
         const entryTerm = configure["process_target_term"];
         
-        const response = await appContext.httpclient.wget(url);
-        const $ = appContext.external("cheerio").load(response.buffer.toString("utf8"));
+        const response = await appContext.core.httpclient.wget(url);
+        const $ = appContext.core.external("cheerio").load(response.buffer.toString("utf8"));
     
         const blocks = [];
         $(selectorBlock).each((i, elem) => {

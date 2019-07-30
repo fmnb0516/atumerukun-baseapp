@@ -13,7 +13,7 @@ module.exports = (appContext) => {
     };
     
     const extention = (url) => {
-        const src = appContext.exteral("url").parse(url).pathname;
+        const src = appContext.core.exteral("url").parse(url).pathname;
         
         const slashIndex = src.lastIndexOf("/");
         const path = src.substring(slashIndex);
@@ -35,7 +35,7 @@ module.exports = (appContext) => {
             } 
             
             if(mode === "download") {
-                const fileId = appContext.external("uuid").v4() + extention(value);
+                const fileId = appContext.core.external("uuid").v4() + extention(value);
                 
                 this.downloads.push({
                     id : fileId,
@@ -53,7 +53,7 @@ module.exports = (appContext) => {
             for (var i = 0; i < this.downloads.length; i++) {
                 const info = this.downloads[i];
                 this.logger.info("start download url = "+ info.src + " =>" + this.baseDir + info.id);
-                promisses.push(this.appContext.httpclient.download(this.baseDir + info.id, info.src));
+                promisses.push(this.appContext.core.httpclient.download(this.baseDir + info.id, info.src));
             }
             return Promise.all(promisses);
         };
@@ -62,14 +62,14 @@ module.exports = (appContext) => {
     return async (configure, chain) => {
         
         logger.info("start process");
-        const manager = new ValueManager(appContext.baseDir + "/storage/");
+        const manager = new ValueManager(appContext.core.baseDir + "/storage/");
         const processors = Array.isArray(configure.processors) ? configure.processors : [];
 		
 		const url = chain.getUrl();
 		
 		logger.info("fetch data : " + url);
-		const response = await appContext.httpclient.wget(url);
-		const $ = appContext.external("cheerio").load(response.buffer.toString("utf8"));
+		const response = await appContext.core.httpclient.wget(url);
+		const $ = appContext.core.external("cheerio").load(response.buffer.toString("utf8"));
 		const pageResult = {};
 		
 		for (var i = 0; i < processors.length; i++) {
