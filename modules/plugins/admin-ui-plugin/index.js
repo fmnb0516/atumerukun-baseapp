@@ -42,7 +42,7 @@ module.exports = (appContext) => {
 	
 	appContext.webApiInstaller.get('/btninfo/:id', (req, res) => {
 		const successHandler = createSuccessHandler(req, res);
-		const id = req.param.id;
+		const id = req.params.id;
         successHandler(buttons[id]);
     });
 };

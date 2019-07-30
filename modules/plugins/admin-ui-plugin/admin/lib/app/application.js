@@ -201,12 +201,6 @@
 			return data;
 		};
 
-		/*
-		application.registerHandlerForm = function(key, resolver, validation) {
-			
-		};
-		*/
-
 		$("body").on("page-processor-form-regsiter", function(e, data) {
 			var key = data.name;
 
@@ -217,6 +211,15 @@
 
 		});
 	})();
+
+	application.initNaviButton = function(page, container, binding) {
+		application.request({
+			url : "../../admin-ui-plugin/btninfo/"+page,
+			method : "GET"
+		}).then(function(resp) {
+		});
+
+	};
 	
 	exports.application = application;
 })(window);

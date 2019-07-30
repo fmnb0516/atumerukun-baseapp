@@ -85,9 +85,10 @@
 		<script type="text/x-handlebars-template" id="template">
 			<div class="row">
 				<div class="col-lg-12">
-					<!--<button id="publishbtn" type="button" class="btn btn-primary">公開</button>-->
-					<button id="download" type="button" class="btn btn-primary">Download Zip</button>
-					<button id="create-page-value-btn" type="button" class="btn btn-primary">新規</button>
+					<div id="navibtn">
+						<button id="download" type="button" class="btn btn-primary">Download Zip</button>
+						<button id="create-page-value-btn" type="button" class="btn btn-primary">新規</button>
+					</div>
 
 					<br/><br/>
 
@@ -289,7 +290,7 @@
 								continue;
 							}
 							
-							var originalUrl = "../storage/" + d[i].data_value;
+							var originalUrl = "../../storage/" + d[i].data_value;
 							var promise = createDlPromise(originalUrl, zip);
 							promisses.push(promise);
 						}
@@ -308,23 +309,8 @@
 					
 				});
 
-				/*
-				$(document).on("click" ,"#publishbtn", function(e) {
-					application.confirm(true, "公開しますか", function() {
-						var id = resultData.id;
-						var opt = {method:"POST", url:"../publish/"+id};
-						application.request(opt)
-							.then(function(resp) {
-								if(resp.status === 200) {
-									application.toast("info", "解析結果を公開しました。");
-								}
-							});
-					});
-				});
-				*/
-				
-
 				reloadAllData(function() {});
+				application.initNaviButton("pageresult", "#navibtn", {pagevalue_id : getQuery("id", "")});
 			});
 		</script>
 	</body>

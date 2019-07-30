@@ -100,7 +100,7 @@ module.exports = async (appContext) => {
     });
 
     appContext.event.on("admin-ui-plugin.initialize-btn.pageresult", (e) => {
-        e.context.push({
+        e.context.navi.push({
             label : "公開",
             url   : "/static-site-generator-plugin/publish/${pagevalue_id}",
             method: "POST"
