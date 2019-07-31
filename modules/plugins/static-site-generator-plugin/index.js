@@ -34,6 +34,7 @@ module.exports = async (appContext) => {
         return database;
     })();
 
+    const mockserver = await require("./lib/mockserver.js");
     const util = await require("./lib/util.js")(appContext);
     const templates = await require("./lib/template.js")(appContext, themeDir, util);
     const sqls = await require("./lib/sql.js")(appContext, util);
@@ -124,6 +125,8 @@ module.exports = async (appContext) => {
         await generateAllPosts();
     });
 
+    appContext.logger.info("mock server listen : 8888 => http://localhost:8888/");
+    mockserver(publicDir, 8888);
     appContext.event.on("system.exit", (e) => {
     });
 };
