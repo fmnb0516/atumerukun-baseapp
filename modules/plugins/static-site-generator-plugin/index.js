@@ -62,19 +62,32 @@ module.exports = async (appContext) => {
         await appContext.core.fileSystem.mkdirs(publicDir);
     };
 
-    const generateAllPosts = async () => {
-        const posts = await appContext.core.fileSystem.readdir(postDir);
-        const site = sitegen(sqls(db), posts.filter(f => f.endsWith(".md")));
+    const status = {flg : false};
 
-        await cleanDatabase();
-        await cleanPublicDir();
-        await site.regenerateDatabase();
-        await site.regenerateArticles();
-        await site.regeneratePageNavigations();
-        await site.regenerateCalenderNavigations();
-        await site.regenerateTags();
-        await site.generateIndexPage();
-        await resourceCopy();
+    const generateAllPosts = async () => {
+        try {
+            if(status.flg === true) {
+                appContext.logger.info("already running generateAllPosts task.");
+                return;
+            }
+
+            status.flg = true;
+
+            const posts = await appContext.core.fileSystem.readdir(postDir);
+            const site = sitegen(sqls(db), posts.filter(f => f.endsWith(".md")));
+    
+            await cleanDatabase();
+            await cleanPublicDir();
+            await site.regenerateDatabase();
+            await site.regenerateArticles();
+            await site.regeneratePageNavigations();
+            await site.regenerateCalenderNavigations();
+            await site.regenerateTags();
+            await site.generateIndexPage();
+            await resourceCopy();
+        }  finally  {
+            status.flg = false;
+        }        
     };
 
     const storePageResult = async (data) => {
@@ -105,5 +118,9 @@ module.exports = async (appContext) => {
             url   : "/static-site-generator-plugin/publish/${pagevalue_id}",
             method: "POST"
         });
+    });
+
+    appContext.taskInstaller.install("generate-static-site", "5 23 * * *", async () => {
+        await generateAllPosts();
     });
 };
