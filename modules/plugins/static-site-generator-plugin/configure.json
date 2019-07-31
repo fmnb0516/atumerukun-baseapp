@@ -3,5 +3,6 @@
     "theme" : "default",
     "author" : "",
     "email" : "",
-    "description" : ""
+    "description" : "",
+    "sitename" : ""
 }
