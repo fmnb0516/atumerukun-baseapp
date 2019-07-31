@@ -2,6 +2,13 @@ module.exports = async (appContext, themeDir, utils) => {
     const Handlebars = appContext.core.external('handlebars');
     const marked = appContext.core.external('marked');
 
+    const renderer = new marked.Renderer();
+    /*
+    renderer.image = function(href, title, text) {
+        return ('<img src="' + href + '" alt="' + text + '" >');
+    };
+    */
+
     const tpl = {};
         
     const templateFiles = (await appContext.core.fileSystem.readdir(themeDir)).filter(f => f.endsWith(".hbs"));
@@ -28,7 +35,7 @@ module.exports = async (appContext, themeDir, utils) => {
     });
 
     Handlebars.registerHelper('marked', function (text, options) {
-        return new Handlebars.SafeString(marked(text));
+        return new Handlebars.SafeString(marked(text, {renderer: renderer}));
     });
 
     return (name, data) => {

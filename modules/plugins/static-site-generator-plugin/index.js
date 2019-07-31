@@ -123,4 +123,7 @@ module.exports = async (appContext) => {
     appContext.taskInstaller.install("generate-static-site", "5 23 * * *", async () => {
         await generateAllPosts();
     });
+
+    appContext.event.on("system.exit", (e) => {
+    });
 };
