@@ -130,5 +130,5 @@ module.exports = async (appContext) => {
     appContext.event.on("system.exit", (e) => {
     });
 
-    await generateAllPosts();
+    //await generateAllPosts();
 };
