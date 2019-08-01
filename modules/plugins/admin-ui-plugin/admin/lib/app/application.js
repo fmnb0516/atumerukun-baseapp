@@ -90,6 +90,14 @@
 		};
 	})();
 	
+	const urlPrefix = (function() {
+		const pathname = location.pathname;
+		const prefixs = pathname.split("/");
+		const index = prefixs.indexOf("admin-ui-plugin");
+		const text = prefixs.slice(0, index).join("/");
+		return text;
+	})();
+
 	(function() {
 		function generateUuid() {
 			let chars = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".split("");
@@ -158,7 +166,7 @@
 			this.hbs.registerHelper('plugin_configure', function(type, configure) {
 				var uuid = generateUuid();
 				application.request({
-					url : metadata[type].template,
+					url :urlPrefix + metadata[type].template,
 					method : "GET"
 				}).then(function(resp) {
 					var result = hbs.compile(resp)({uuid:uuid, data:configure});
@@ -181,7 +189,7 @@
 		application.create = function(metadata) {
 			metadata = metadata !== undefined ? metadata : {};
 			for(var k in metadata) {
-				var url = metadata[k].script;
+				var url = urlPrefix + metadata[k].script;
 				$("body").append($("<script>", {type:"text/javascript", src:url}));
 			}
 

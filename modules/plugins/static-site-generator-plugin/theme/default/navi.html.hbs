@@ -60,26 +60,16 @@ img.profile-icon {
 		{{include "header.html.hbs" this}}
 	</div>
 
-	<div class="container" style="margin-top: 60px;">
+	<div class="" style="margin-top: 60px; padding: 10px;">
 		<div class="row">
 			<div class="col-lg-8 col-md-8 cols-sm-8">
-                {{#each entries}}
-                <div>
-                    <h3 class="article-header"><a href="/post/{{post_id}}.html">{{title}}</a></h3>
-
-                    <div style="margin-left: 10px; font-size: 80%;">
-                        <span class="label label-info">{{date create_at}}</span>
-                        {{#each tags}}
-                        <a href="/tags/{{hash this}}/0.html"><i class="glyphicon glyphicon-tag"></i> {{this}}</a>
-                        {{/each}}
-                    </div>
-                    <div class="article-body markdown-body"
-                        style="overflow-x: hidden; margin-top: 10px; margin-left: 10px;font-size: 80%;">
-						<a href="/post/{{post_id}}.html"><img src="{{thumbnail}}"/></a>
-                    </div>
-                </div>
-                <hr/>
-                {{/each}}
+				<div class="row">
+					{{#each entries}}
+					<div class="col-lg-6 col-md-6 cols-sm-12">
+						<img src="{{thumbnail}}" style="max-width:100%"/>
+					</div>
+					 {{/each}}
+				</div>               
 
                 <ul class="pager">
 					<li class="previous {{disabled navi.prev}}"><a href="{{navi.prev}}">前のページ</a></li>

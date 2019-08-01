@@ -13,7 +13,7 @@ module.exports = (appContext) => {
     };
     
     const extention = (url) => {
-        const src = appContext.core.exteral("url").parse(url).pathname;
+        const src = appContext.core.external("url").parse(url).pathname;
         
         const slashIndex = src.lastIndexOf("/");
         const path = src.substring(slashIndex);
@@ -35,7 +35,7 @@ module.exports = (appContext) => {
             } 
             
             if(mode === "download") {
-                const fileId = appContext.core.external("uuid").v4() + extention(value);
+                const fileId = appContext.core.external("node-uuid").v4() + extention(value);
                 
                 this.downloads.push({
                     id : fileId,
@@ -52,8 +52,8 @@ module.exports = (appContext) => {
             const promisses = [];
             for (var i = 0; i < this.downloads.length; i++) {
                 const info = this.downloads[i];
-                this.logger.info("start download url = "+ info.src + " =>" + this.baseDir + info.id);
-                promisses.push(this.appContext.core.httpclient.download(this.baseDir + info.id, info.src));
+                logger.info("start download url = "+ info.src + " =>" + this.baseDir + info.id);
+                promisses.push(appContext.core.httpclient.download(this.baseDir + info.id, info.src));
             }
             return Promise.all(promisses);
         };
