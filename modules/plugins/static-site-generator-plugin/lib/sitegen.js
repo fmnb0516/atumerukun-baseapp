@@ -50,6 +50,33 @@ module.exports = async (appContext, util, templates, dirs) => {
             this.posts = posts;
         };
 
+        async generateSiteContent(posts) {
+            logger.info("---- begin regenerate site content json ----");
+
+            posts = posts ? posts : this.posts;
+            
+            await appContext.core.fileSystem.writeFile(dirs.publicDir + "/content.json",  "[", "utf8");
+
+            for(var i=0; i<posts.length; i++) {
+                const prefix = i==0 ? '' : ',';
+
+                const file = posts[i];
+                logger.info("    - regenerate article json start : " + file);
+                logger.info("    - parsing metadata : " + file);
+                const postId = appContext.core.external("path").basename(file, ".md");
+                const text = await appContext.core.fileSystem.readFile(dirs.postDir + "/" + file, "utf8");
+                const match =  /(---)([\s\S]*)(---)/gm.exec(text);
+                const meta = appContext.core.external("js-yaml").safeLoad(match !== null ? match[2].trim() : {});
+                await appContext.core.fileSystem.appendFile(dirs.publicDir + "/content.json",  prefix + JSON.stringify({
+                    meta : meta,
+                    postId : postId
+                }), "utf8");
+                logger.info("    - regenerate article json end : " + file);
+            }
+
+            await appContext.core.fileSystem.appendFile(dirs.publicDir + "/content.json",  "]", "utf8");
+        };
+
         async generateIndexPage() {
             logger.info("---- begin regenerate top index html ----");
             const html = templates("index.html.hbs", {

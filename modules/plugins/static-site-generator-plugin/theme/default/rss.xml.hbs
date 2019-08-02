@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rss version="2.0">
+    <channel>
+        <title>{{configure.site.sitename}}</title>
+        <link>{{configure.site.url}}</link>
+        <description>
+            <![CDATA[{{configure.site.description}}]]>
+        </description>
+        <image>
+            <title>{{configure.site.sitename}}</title>
+            <link>{{configure.site.url}}</link>
+            <url>{{configure.favicon}}</url>
+        </image>
+
+        <lastBuildDate>{{core.lastBuildDate}}</lastBuildDate>
+        <language>{{configure.site.language}}</language>
+        <pubDate>{{core.lastBuildDate}}</pubDate>
+        <category>{{configure.site.category}}</category>
+
+        {{#each entry}}
+        <item>
+            <title>{{title}}</title>
+            <link>{{configure.site.url}}post/{{post_id}}.html</link>
+            <description>
+                <![CDATA[{{description}}]]>
+            </description>
+            <pubDate>>{{configure.site.url}}post/{{post_id}}.html</pubDate>
+            <author>configure.author.name</author>
+        </item>
+        {{each}}
+    </channel>
+</rss>
