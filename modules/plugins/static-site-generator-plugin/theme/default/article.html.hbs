@@ -40,20 +40,16 @@
                     <div class="article-body markdown-body" style="overflow-x: hidden; margin-top: 10px;">
                         {{marked post.text}}
                     </div>
-
-                    <hr/>
-
 				</div>
 				
 				<div class="col-lg-4 col-md-4 cols-sm-4">
 					{{include "sidebar.html.hbs" this true}}
 				</div>
 			</div>
-
-			<div class="row">
-				{{include "footer.html.hbs" this}}
-			</div>
 		</div>
+
+        <hr/>
+        {{include "footer.html.hbs" this}}
 
 		<span id="javascript-container" style="display: none;">
 			{{include "javascript.html.hbs" this}}
