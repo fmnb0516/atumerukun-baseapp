@@ -44,7 +44,8 @@ module.exports = async (appContext, util, templates, dirs) => {
     const logger = appContext.logger;
 
     class SiteGenerator {
-        constructor(sql, posts) {
+        constructor(configure, sql, posts) {
+            this.configure = configure;
             this.sql = sql;
             this.posts = posts;
         };
@@ -52,7 +53,7 @@ module.exports = async (appContext, util, templates, dirs) => {
         async generateIndexPage() {
             logger.info("---- begin regenerate top index html ----");
             const html = templates("index.html.hbs", {
-                configure : appContext.core.configure
+                configure : this.configure
             });
             await appContext.core.fileSystem.writeFile(dirs.publicDir + "/index.html",  html, "utf8");
             logger.info("---- end regenerate top index html ----");
@@ -73,7 +74,7 @@ module.exports = async (appContext, util, templates, dirs) => {
                 });
         
                 const html = templates("navi.html.hbs", {
-                    configure : appContext.core.configure,
+                    configure :this.configure,
                     newest : newest,
                     tags : tags,
                     calender : calender,
@@ -115,7 +116,7 @@ module.exports = async (appContext, util, templates, dirs) => {
 
             logger.info("    - generate all tag page start");
             const html = templates("alltags.html.hbs", {
-                configure : appContext.core.configure,
+                configure : this.configure,
                 tags : tags
             });
             await appContext.core.fileSystem.writeFile(dirs.publicDir + "/tags/list.html",  html, "utf8");
@@ -167,7 +168,7 @@ module.exports = async (appContext, util, templates, dirs) => {
                 
                 logger.info("    - generate html : " + file);
                 const html = templates("article.html.hbs", {
-                    configure : appContext.core.configure,
+                    configure : this.configure,
                     newest : newest,
                     tags : tags,
                     calender : calender,
@@ -237,7 +238,7 @@ module.exports = async (appContext, util, templates, dirs) => {
         };
     }
 
-    return (sql, posts) => {
-        return new SiteGenerator(sql, posts);
+    return (configure, sql, posts) => {
+        return new SiteGenerator(configure, sql, posts);
     };
 };

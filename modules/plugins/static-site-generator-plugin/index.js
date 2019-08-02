@@ -75,7 +75,7 @@ module.exports = async (appContext) => {
             status.flg = true;
 
             const posts = await appContext.core.fileSystem.readdir(postDir);
-            const site = sitegen(sqls(db), posts.filter(f => f.endsWith(".md")));
+            const site = sitegen(configure, sqls(db), posts.filter(f => f.endsWith(".md")));
     
             await cleanDatabase();
             await cleanPublicDir();

@@ -1,8 +1,24 @@
 {
     "favicon" : "/favicon.ico",
     "theme" : "default",
-    "author" : "",
-    "email" : "",
-    "description" : "",
-    "sitename" : ""
+
+    "author" : {
+        "name" : "xxxxxx xxxxx",
+        "email" : "xxxxx@xx.xx"
+    },
+    
+    "site" : {
+        "description" : "sample description",
+        "sitename" : "Sample Site",
+        "link" : [
+            {
+                "url" : "https://www.google.com/?hl=ja",
+                "title" : "Google"
+            }
+        ]
+    },
+
+    "social" : {
+        "twitter" : ""
+    }
 }
