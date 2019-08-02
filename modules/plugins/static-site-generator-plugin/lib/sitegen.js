@@ -119,7 +119,10 @@ module.exports = async (appContext, util, templates, dirs) => {
             logger.info("    - generate all tag page start");
             const html = templates("alltags.html.hbs", {
                 configure : this.configure,
-                tags : tags
+                tags : tags,
+                page : {
+                    title : "タグ一覧"
+                }
             });
             await appContext.core.fileSystem.writeFile(dirs.publicDir + "/tags/list.html",  html, "utf8");
             logger.info("    - generate all tag page end");
