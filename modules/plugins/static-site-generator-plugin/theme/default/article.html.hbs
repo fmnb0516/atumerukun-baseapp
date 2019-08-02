@@ -1,0 +1,72 @@
+<html>
+	<head>
+		{{include "head.meta.html.hbs" this}}
+		<title>{{page.title}} - {{configure.site.sitename}}</title>
+		{{include "head.css.html.hbs" this}}
+
+        <link rel="stylesheet" type="text/css" href="/fancybox/jquery.fancybox.css">
+	</head>
+	
+	<body>
+		<div class="navbar navbar-expand-lg fixed-top navbar-light bg-light">
+			{{include "header.html.hbs" this}}
+		</div>
+		
+		<div class="" style="margin-top: 90px; padding: 10px;">
+			<div class="row">
+				<div class="col-lg-8 col-md-8 cols-sm-8">
+
+                    <div class="card text-white bg-dark" style="position: relative">
+                        <i class="fas fa-star" style="font-size: 40px;position: absolute;top: 5px;right: 5px;color: gainsboro;"></i>
+
+                        <div class="card-header">
+                            <span class="badge badge-primary">{{date post.meta.date}}</span>
+                        </div>
+
+                        <div class="card-body">
+                            <h4 class="card-title">{{post.meta.title}}</h4>
+                            <p class="card-text">{{post.meta.description}}</p>
+
+                            <div>
+                                {{#each post.meta.tags}}
+								<a href="/tags/{{hash this}}/0.html"><span class="badge badge-secondary">{{this}}</span></a>
+								{{/each}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr/>
+
+                    <div class="article-body markdown-body" style="overflow-x: hidden; margin-top: 10px;">
+                        {{marked post.text}}
+                    </div>
+
+                    <hr/>
+
+				</div>
+				
+				<div class="col-lg-4 col-md-4 cols-sm-4">
+					{{include "sidebar.html.hbs" this true}}
+				</div>
+			</div>
+
+			<div class="row">
+				{{include "footer.html.hbs" this}}
+			</div>
+		</div>
+
+		<span id="javascript-container" style="display: none;">
+			{{include "javascript.html.hbs" this}}
+
+            <script src="/fancybox/jquery.fancybox.min.js"></script>
+            <script>
+                $(function() {
+                    $(".markdown-body img").wrap(function() {
+                        return "<a data-fancybox='images' href='" + $(this).attr('src') + "'></a>";
+                    });                
+                    $('[data-fancybox]').fancybox();
+                });
+            </script>
+		</span>
+	</body>
+</html>

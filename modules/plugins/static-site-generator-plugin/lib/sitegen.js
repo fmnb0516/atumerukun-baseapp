@@ -174,6 +174,9 @@ module.exports = async (appContext, util, templates, dirs) => {
                     newest : newest,
                     tags : tags,
                     calender : calender,
+                    page : {
+                        title : meta.title
+                    },
                     post : {
                         meta : meta,
                         postId : postId,
