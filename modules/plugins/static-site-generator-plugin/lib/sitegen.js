@@ -60,7 +60,7 @@ module.exports = async (appContext, util, templates, dirs) => {
 
         async regenerateNavigations(prefix, result, title) {
             const tags = await this.sql.selectQuery("SELECT tag, COUNT(*) AS cnt FROM tag_data GROUP BY tag ORDER BY cnt DESC LIMIT ?", [20]);
-            const newest = await this.sql.selectQuery("SELECT post_id, title, create_at FROM post_data ORDER BY create_at DESC LIMIT ?", [5]);
+            const newest = await this.sql.selectQuery("SELECT post_id, title, create_at, thumbnail, tags FROM post_data ORDER BY create_at DESC LIMIT ?", [5]);
             const calender = parseCalender(await this.sql.selectQuery("SELECT caldata, COUNT(*) AS cnt FROM post_data GROUP BY caldata", []));
             
             const subarray = util.chunk(10, result);
@@ -149,7 +149,7 @@ module.exports = async (appContext, util, templates, dirs) => {
             posts = posts ? posts : this.posts;
 
             const tags = await this.sql.selectQuery("SELECT tag, COUNT(*) AS cnt FROM tag_data GROUP BY tag ORDER BY cnt DESC LIMIT ?", [20], true);
-            const newest = await this.sql.selectQuery("SELECT post_id, title, create_at FROM post_data ORDER BY create_at DESC LIMIT ?", [5], true);
+            const newest = await this.sql.selectQuery("SELECT post_id, title, create_at, thumbnail, tags FROM post_data ORDER BY create_at DESC LIMIT ?", [5], true);
             const calender = parseCalender(await this.sql.selectQuery("SELECT caldata, COUNT(*) AS cnt FROM post_data GROUP BY caldata", [], true));
 
             await appContext.core.fileSystem.mkdirs(dirs.publicDir + "/post");

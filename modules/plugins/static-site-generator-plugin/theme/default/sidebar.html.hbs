@@ -1,0 +1,118 @@
+
+<div style="padding: 10px;">
+
+    <h5 style="color: white;background-color: black;padding: 10px;margin: 0 15px;border-radius: 15px;">
+		<i class="fas fa-book-medical"></i>
+		新着一覧
+	</h5>
+
+    <div style="padding: 10px 10px 5px 15px;">
+        <ul class="list-group"></ul>
+        {{#each newest}}
+            <li class="list-group-item">
+                <div style="margin-right: 5px;float: left; height: 100px; width: 70px; background-image: url('{{thumbnail}}');background-size: cover;">
+                </div>
+                <div>
+                    <span class="badge badge-primary">{{date create_at}}</span>
+                    <br/>
+                    <a style="font-size: 75%;">{{title}}</a>
+                    <br/>
+                    {{#split tags 2}}
+                        <span class="badge badge-pill badge-light">{{this}}</span>
+                    {{/split}}
+                    ...
+                </div>
+                <div class="clearfix"></div>
+            </li>
+        {{/each}}
+        </ul>
+    </div>
+
+</div>
+
+<div style="padding: 10px;">
+    <h5 style="color: white;background-color: black;padding: 10px;margin: 0 15px;border-radius: 15px;">
+		<i class="fas fa-book-medical"></i>
+		おすすめタグ一覧
+	</h5>
+
+    <div style="padding: 10px 10px 5px 15px;">
+        <ul class="tagcloud">
+        {{#each tags}}
+            <li><a href=""><span>{{tag}}</span></a></li>
+        {{/each}}
+            <li><a href=""><span>All...</span></a></li>
+        </ul>
+    </div>
+</div>
+
+
+<div style="padding: 10px;">
+
+    <h5 style="color: white;background-color: black;padding: 10px;margin: 0 15px;border-radius: 15px;">
+		<i class="fas fa-book-medical"></i>
+		過去アーカイブ
+	</h5>
+
+    
+    <div style="padding: 10px 10px 5px 15px;">
+        <style>
+            .archive-list{
+                list-style: none;
+                padding: 0;
+            }
+            .archive-list i.fa-arrow-circle-right {
+                display: none;
+            }
+            .closable-list i.fa-arrow-circle-right {
+                display: initial;
+            }
+            .closable-list li, .closable-list i.fa-arrow-circle-down {
+                display: none;
+            }
+        </style>
+
+        <ul class="archive-list">
+            {{#each calender}}
+			<li class="closable-list">
+                <i class="fas fa-arrow-circle-down"></i>
+                <i class="fas fa-arrow-circle-right"></i>
+                <a onclick="$(this).parent().toggleClass('closable-list');">{{label}}({{count}})</a>
+				<ul>
+					{{#each entries}}
+					<li><a href="/archive/{{cal_id}}/0.html" >{{label}}({{count}})</a></li>
+					{{/each}}
+				</ul>
+			</li>
+			{{/each}}
+		</ul>
+    </div>
+</div>
+
+<div style="padding: 10px;">
+
+    <h5 style="color: white;background-color: black;padding: 10px;margin: 0 15px;border-radius: 15px;">
+		<i class="fas fa-book-medical"></i>
+		他サイト
+	</h5>
+
+    <div style="padding: 10px 10px 5px 15px;">
+        <ul class="list-group">
+        {{#each configure.link}}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="{{url}}" target="_blank" >{{title}}</a>
+            </li>
+        {{/each}}        
+        </ul>
+    </div>
+
+</div>
+
+
+<div style="padding: 10px;">
+
+    <h5 style="color: white;background-color: black;padding: 10px;margin: 0 15px;border-radius: 15px;">
+		<i class="fas fa-book-medical"></i>
+		広告(PR)
+	</h5>
+</div>

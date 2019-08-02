@@ -4,7 +4,8 @@ const fs = require('fs');
 
 const mimes = {
     '.html': 'text/html',
-    '.js': 'text/javascript'
+    '.js': 'text/javascript',
+    '.css': 'text/css'
 };
 
 module.exports = (dir, port) => {

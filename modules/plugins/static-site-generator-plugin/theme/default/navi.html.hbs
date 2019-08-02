@@ -1,29 +1,50 @@
 <html>
 	<head>
+		{{include "head.meta.html.hbs" this}}
 		<title>{{page.title}}</title>
 		{{include "head.css.html.hbs" this}}
 	</head>
 	
 	<body>
-		<div class="navbar navbar-default navbar-fixed-top">
+		<div class="navbar navbar-expand-lg fixed-top navbar-light bg-light">
 			{{include "header.html.hbs" this}}
 		</div>
 		
-		<div class="" style="margin-top: 60px; padding: 10px;">
+		<div class="" style="margin-top: 90px; padding: 10px;">
 			<div class="row">
 				<div class="col-lg-8 col-md-8 cols-sm-8">
-					<div class="row">
+					<h5 style="color: white;background-color: black;padding: 10px;margin: 0 15px;border-radius: 15px;">
+						<i class="fas fa-book-medical"></i>
+						記事新着リスト
+					</h5>
+					<div class="d-flex flex-row flex-wrap">
 						{{#each entries}}
-						<div class="col-lg-6 col-md-6 cols-sm-12">
-							<img src="{{thumbnail}}" style="max-width:100%"/>
+						<div class="col-lg-6 col-md-6 cols-sm-12" style="display: flex;padding-top: 15px;position:relative;">
+							<div style="position: absolute;padding: 10px;">
+								<span class="badge badge-primary">{{date create_at}}</span>
+							</div>
+							<div style="display: flex;align-items: center;border: 1px solid #dee2e6;border-radius: 0.25rem;width:100%;">
+								<div style="padding 0 10px;width:100%;">
+									<i class="fas fa-star" style="font-size: 50px;position: absolute;top: 25px;right: 25px;color: gainsboro;"></i>
+									<img src="{{thumbnail}}" class="img-fluid"/>
+									<p style="padding: 5px 5px;margin: 0;width:100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">{{title}}</p>
+
+									<div style="padding: 0 5px 10px 5px;">
+										{{#each tags}}
+										<span class="badge badge-secondary">{{this}}</span>
+										{{/each}}
+									</div>
+								</div>
+							</div>
 						</div>
 						{{/each}}
-					</div>               
+					</div>
+
 					
-					<ul class="pager">
-						<li class="previous {{disabled navi.prev}}"><a href="{{navi.prev}}">前のページ</a></li>
-						<li class="next {{disabled navi.next}}"><a href="{{navi.next}}">次のページ</a></li>
-					</ul>
+					<div class="d-flex flex-row justify-content-around" style="padding: 20px;">
+						<a href="{{navi.prev}}" class="btn btn-outline-primary {{disabled navi.prev}}"><i class="fas fa-arrow-left"></i> 前のページ</a>
+						<a href="{{navi.next}}" class="btn btn-outline-primary {{disabled navi.next}}"><i class="fas fa-arrow-right"></i> 次のページ</a>
+					</div>
 				</div>
 				
 				<div class="col-lg-4 col-md-4 cols-sm-4">
