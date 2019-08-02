@@ -10,15 +10,15 @@
         <ul class="list-group"></ul>
         {{#each newest}}
             <li class="list-group-item">
-                <div style="margin-right: 5px;float: left; height: 100px; width: 70px; background-image: url('{{thumbnail}}');background-size: cover;">
-                </div>
+                <a href="/post/{{post_id}}.html" style="display: block;margin-right: 5px;float: left; height: 100px; width: 70px; background-image: url('{{thumbnail}}');background-size: cover;">
+                </a>
                 <div>
                     <span class="badge badge-primary">{{date create_at}}</span>
                     <br/>
-                    <a style="font-size: 75%;">{{title}}</a>
+                    <a style="font-size: 75%;" href="/post/{{post_id}}.html">{{title}}</a>
                     <br/>
                     {{#split tags 2}}
-                        <span class="badge badge-pill badge-light">{{this}}</span>
+                        <a href="/tags/{{hash this}}/0.html"><span class="badge badge-pill badge-light">{{this}}</span></a>
                     {{/split}}
                     ...
                 </div>
@@ -39,9 +39,9 @@
     <div style="padding: 10px 10px 5px 15px;">
         <ul class="tagcloud">
         {{#each tags}}
-            <li><a href=""><span>{{tag}}</span></a></li>
+            <li><a href="/tags/{{hash tag}}/0.html"><span>{{tag}}</span></a></li>
         {{/each}}
-            <li><a href=""><span>All...</span></a></li>
+            <li><a href="/tags/list.html"><span>All...</span></a></li>
         </ul>
     </div>
 </div>

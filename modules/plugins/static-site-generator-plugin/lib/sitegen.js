@@ -79,7 +79,9 @@ module.exports = async (appContext, util, templates, dirs) => {
                     tags : tags,
                     calender : calender,
                     entries : entry,
-                    title : title + " - " + (i+1) + "ページ目",
+                    page : {
+                        title : title + " - " + (i+1) + "ページ目",
+                    },
                     navi : {
                         next : (i+1) < subarray.length ? "/"+prefix+"/" + (i+1) + ".html" : null,
                         prev : i == 0 ? null : "/"+prefix+"/" + (i-1) + ".html"
