@@ -1,57 +1,43 @@
 <html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport"
-	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="apple-touch-icon-precomposed" href="{{configure.favicon}}" />
-<link rel="shortcut icon" href="/favicon.png">
-
-<title>{{title}}</title>
-<link id="css-bootstrap" rel="stylesheet" type="text/css"
-	href="/bootstrap/css/bootstrap.sandstone.min.css">
-<link rel="stylesheet" type="text/css"
-	href="/github-markdown-css/css/github-markdown.css">
-<link rel="stylesheet" type="text/css"
-	href="/highlight/styles/github.css">
-
-</head>
-
-<body>
-	<div class="navbar navbar-default navbar-fixed-top">
-		{{include "header.html.hbs" this}}
-	</div>
-
-	<div class="" style="margin-top: 60px; padding: 10px;">
-		<div class="row">
-			<div class="col-lg-8 col-md-8 cols-sm-8">
-				<div class="row">
-					{{#each entries}}
-					<div class="col-lg-6 col-md-6 cols-sm-12">
-						<img src="{{thumbnail}}" style="max-width:100%"/>
-					</div>
-					 {{/each}}
-				</div>               
-
-                <ul class="pager">
-					<li class="previous {{disabled navi.prev}}"><a href="{{navi.prev}}">前のページ</a></li>
-					<li class="next {{disabled navi.next}}"><a href="{{navi.next}}">次のページ</a></li>
-				</ul>
+	<head>
+		<title>{{page.title}}</title>
+		{{include "head.css.html.hbs" this}}
+	</head>
+	
+	<body>
+		<div class="navbar navbar-default navbar-fixed-top">
+			{{include "header.html.hbs" this}}
+		</div>
+		
+		<div class="" style="margin-top: 60px; padding: 10px;">
+			<div class="row">
+				<div class="col-lg-8 col-md-8 cols-sm-8">
+					<div class="row">
+						{{#each entries}}
+						<div class="col-lg-6 col-md-6 cols-sm-12">
+							<img src="{{thumbnail}}" style="max-width:100%"/>
+						</div>
+						{{/each}}
+					</div>               
+					
+					<ul class="pager">
+						<li class="previous {{disabled navi.prev}}"><a href="{{navi.prev}}">前のページ</a></li>
+						<li class="next {{disabled navi.next}}"><a href="{{navi.next}}">次のページ</a></li>
+					</ul>
+				</div>
+				
+				<div class="col-lg-4 col-md-4 cols-sm-4">
+					{{include "sidebar.html.hbs" this true}}
+				</div>
 			</div>
 
-			<div class="col-lg-4 col-md-4 cols-sm-4">
-				{{include "sidebar.html.hbs" this true}}
+			<div class="row">
+				{{include "footer.html.hbs" this}}
 			</div>
 		</div>
-	</div>
 
-	<script type="text/javascript"
-		src="/jquery/js/jquery-2.1.4.min.js"></script>
-	<script type="text/javascript"
-		src="/bootstrap/js/bootstrap.min.js"></script>
-	<script type="text/javascript"
-		src="/highlight/highlight.pack.js"></script>
-		
-</body>
+		<span id="javascript-container" style="display: none;">
+			{{include "javascript.html.hbs" this}}
+		</span>
+	</body>
 </html>
