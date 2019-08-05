@@ -74,7 +74,13 @@ module.exports = async (appContext, themeDir, utils) => {
         return mode === "escape" ? html : new Handlebars.SafeString(html);
     });
 
-    return (name, data) => {
-        return tpl[name](data);
+    return {
+        render : (name, data) => {
+            return tpl[name](data);
+        },
+
+        names : () => {
+            return templateFiles;
+        }
     };
 };

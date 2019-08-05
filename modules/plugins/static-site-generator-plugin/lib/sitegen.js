@@ -50,6 +50,21 @@ module.exports = async (appContext, util, templates, dirs) => {
             this.posts = posts;
         };
 
+        async generateExtPages() {
+
+        };
+
+        async resourceCopy() {
+            logger.info("---- begin regenerate copy ----");
+
+            logger.info("    - copy global assets : " + dirs.assetDir + " => " + dirs.publicDir);
+            await util.copyResource(dirs.assetDir, dirs.publicDir);
+
+            logger.info("    - copy theme assets : " + dirs.themeDir + " => " + dirs.publicDir);
+            await util.copyResource(dirs.themeDir+"/assets", dirs.publicDir);
+            logger.info("---- end regenerate copy ----");
+        };
+
         async generateRSS() {
             logger.info("---- begin regenerate rss xml ----");
 

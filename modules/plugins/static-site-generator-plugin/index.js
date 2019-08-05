@@ -47,11 +47,6 @@ module.exports = async (appContext) => {
 
     const postgen = await require("./lib/postgen.js")(appContext, util);
 
-    const resourceCopy = async () => {
-        await util.copyResource(assetDir, publicDir);
-        await util.copyResource(themeDir+"/assets", publicDir);
-    };
-
     const cleanDatabase = async () => {
         const sql =sqls(db);
         await sql.deleteQuery("DELETE FROM post_data", []);
@@ -87,7 +82,8 @@ module.exports = async (appContext) => {
             await site.generateIndexPage();
             await site.generateSiteContent();
             await site.generateRSS();
-            await resourceCopy();
+            await site.generateExtPages();
+            await site.resourceCopy();
         }  finally  {
             status.flg = false;
         }        

@@ -1,0 +1,79 @@
+<html>
+	<head>
+		{{include "head.meta.html.hbs" this}}
+		<title>{{page.title}} - {{configure.site.sitename}}</title>
+		{{include "head.css.html.hbs" this}}
+
+		<style>
+			.favorite_reg {
+				color: yellow;
+			}
+
+			.favorite_unreg {
+				color: gainsboro;
+			}
+		</style>
+	</head>
+	
+	<body>
+		<div class="navbar navbar-expand-lg fixed-top navbar-light bg-light">
+			{{include "header.html.hbs" this}}
+		</div>
+		
+		<div class="" style="margin-top: 90px; width: 100%;overflow-x: hidden;">
+			<div class="row">
+				<div class="col-lg-8 col-md-8 cols-sm-8">
+					<h5 style="color: white;background-color: black;padding: 10px;margin: 0 15px;border-radius: 15px;">
+						<i class="fas fa-book-medical"></i>
+						全文検索
+					</h5>
+					<div class="d-flex flex-row flex-wrap">
+					</div>
+				</div>
+				
+				<div class="col-lg-4 col-md-4 cols-sm-4">
+					{{include "sidebar.html.hbs" this true}}
+				</div>
+			</div>
+		</div>
+		
+        <hr/>
+		{{include "footer.html.hbs" this}}
+
+		<span id="javascript-container" style="display: none;">
+			{{include "javascript.html.hbs" this}}
+
+			<script type="text/javascript">
+				$(function() {
+					(function() {
+						var favorites = localStorage.getItem("favorites");
+						favorites = favorites ? JSON.parse(favorites) : {};
+
+						$(".favorite").each(function() {
+							var postId = $(this).attr("data-postid");
+							$(this).addClass(favorites[postId] ? "favorite_reg" : "favorite_unreg");
+						});
+					})();
+
+					$(".favorite").click(function() {
+						var favorites = localStorage.getItem("favorites");
+						favorites = favorites ? JSON.parse(favorites) : {};
+
+						var selector = $(this);
+						var postId = selector.attr("data-postid");
+						if(selector.hasClass("favorite_reg")) {
+							selector.removeClass("favorite_reg").addClass("favorite_unreg");
+							delete favorites[postId];
+						} else if(selector.hasClass("favorite_unreg")) {
+							selector.removeClass("favorite_unreg").addClass("favorite_reg");
+							favorites[postId] = {postId : postId};
+						}
+						localStorage.setItem('favorites', JSON.stringify(favorites));
+
+					});
+
+				});
+			</script>
+		</span>
+	</body>
+</html>
