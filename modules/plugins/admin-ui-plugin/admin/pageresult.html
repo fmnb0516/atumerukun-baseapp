@@ -309,8 +309,9 @@
 					
 				});
 
-				reloadAllData(function() {});
-				application.initNaviButton("pageresult", "#navibtn", {pagevalue_id : getQuery("id", "")});
+				reloadAllData(function() {
+					application.initNaviButton("pageresult", "#navibtn", {pagevalue_id : getQuery("id", "")});
+				});
 			});
 		</script>
 	</body>

@@ -5,6 +5,16 @@
 		{{include "head.css.html.hbs" this}}
 
         <link rel="stylesheet" type="text/css" href="/fancybox/jquery.fancybox.css">
+
+        <style>
+			.favorite_reg {
+				color: yellow;
+			}
+
+			.favorite_unreg {
+				color: gainsboro;
+			}
+		</style>
 	</head>
 	
 	<body>
@@ -17,7 +27,7 @@
 				<div class="col-lg-8 col-md-8 cols-sm-8">
 
                     <div class="card text-white bg-dark" style="position: relative">
-                        <i class="fas fa-star" style="font-size: 40px;position: absolute;top: 5px;right: 5px;color: gainsboro;"></i>
+                        <i data-postid="{{postId}}" class="fas fa-star favorite" style="cursor: pointer;font-size: 50px;position: absolute;top: 5px;right: 5px;"></i>
 
                         <div class="card-header">
                             <span class="badge badge-primary">{{date post.meta.date}}</span>
@@ -63,6 +73,39 @@
                     $('[data-fancybox]').fancybox();
                 });
             </script>
+
+            <script type="text/javascript">
+				$(function() {
+					(function() {
+						var favorites = localStorage.getItem("favorites");
+						favorites = favorites ? JSON.parse(favorites) : {};
+
+						$(".favorite").each(function() {
+							var postId = $(this).attr("data-postid");
+							$(this).addClass(favorites[postId] ? "favorite_reg" : "favorite_unreg");
+						});
+					})();
+
+					$(".favorite").click(function() {
+						var favorites = localStorage.getItem("favorites");
+						favorites = favorites ? JSON.parse(favorites) : {};
+
+						var selector = $(this);
+						var postId = selector.attr("data-postid");
+						if(selector.hasClass("favorite_reg")) {
+							selector.removeClass("favorite_reg").addClass("favorite_unreg");
+							delete favorites[postId];
+						} else if(selector.hasClass("favorite_unreg")) {
+							selector.removeClass("favorite_unreg").addClass("favorite_reg");
+							favorites[postId] = {postId : postId};
+						}
+						localStorage.setItem('favorites', JSON.stringify(favorites));
+
+					});
+
+				});
+			</script>
+
 		</span>
 	</body>
 </html>

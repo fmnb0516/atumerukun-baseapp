@@ -1,0 +1,134 @@
+<html>
+
+<head>
+	{{include "head.meta.html.hbs" this}}
+	<title>{{page.title}} - {{configure.site.sitename}}</title>
+	{{include "head.css.html.hbs" this}}
+
+	<style>
+		.favorite_reg {
+			color: yellow;
+		}
+
+		.favorite_unreg {
+			color: gainsboro;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="navbar navbar-expand-lg fixed-top navbar-light bg-light">
+		{{include "header.html.hbs" this}}
+	</div>
+
+	<div class="" style="margin-top: 90px; width: 100%;overflow-x: hidden;">
+		<div class="row">
+			<div class="col-lg-8 col-md-8 cols-sm-8">
+				<h5 style="color: white;background-color: black;padding: 10px;margin: 0 15px;border-radius: 15px;">
+					<i class="fas fa-book-medical"></i>
+					お気に入り一覧
+				</h5>
+				<div class="d-flex flex-row flex-wrap" id="render-area">
+				</div>
+			</div>
+
+			<div class="col-lg-4 col-md-4 cols-sm-4">
+				{{include "sidebar.html.hbs" this true}}
+			</div>
+		</div>
+	</div>
+
+	<hr />
+	{{include "footer.html.hbs" this}}
+
+	<span id="javascript-container" style="display: none;">
+		{{include "javascript.html.hbs" this}}
+
+		<script type="text/javascript">
+			$(function () {
+				(function() {
+                    Handlebars.registerHelper('date', function (val, options) {
+                        if(val === undefined || val === null) {
+                            return "";
+                        }
+                        const d = (typeof val === "string" || typeof val === "number")  ? new Date(val) : val;
+                        return d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日";
+                    });
+
+		           function resolve(data, postId) {
+                        const d = data.find(function(d) {
+                            return d.postId === postId;
+                        });
+
+                        return d;
+                    };
+
+					var template = Handlebars.compile($("#entry-template").html());
+
+                    $.ajax({
+                        type: 'GET',
+                        url: '/content.json',
+                        dataType: 'json'
+                    }).done( function (data, textStatus, jqXHR) {
+                        var favorites = localStorage.getItem("favorites");
+                        favorites = favorites ? JSON.parse(favorites) : {};
+                        var keys = Object.keys(favorites);
+                        for(var i=0; i<keys.length; i++) {
+                            var context = resolve(data, keys[i]);
+                            if(context === undefined) {
+                                continue;
+                            }
+                            $("#render-area").append(template(context));
+                        }
+                    });
+
+                })();
+
+				$(document).on("click", ".favorite", function () {
+					var favorites = localStorage.getItem("favorites");
+					favorites = favorites ? JSON.parse(favorites) : {};
+
+					var selector = $(this);
+					var postId = selector.attr("data-postid");
+					if (selector.hasClass("favorite_reg")) {
+						selector.removeClass("favorite_reg").addClass("favorite_unreg");
+						delete favorites[postId];
+					} else if (selector.hasClass("favorite_unreg")) {
+						selector.removeClass("favorite_unreg").addClass("favorite_reg");
+						favorites[postId] = { postId: postId };
+					}
+					localStorage.setItem('favorites', JSON.stringify(favorites));
+				});
+
+			});
+		</script>
+
+		{{{{template}}}}
+		<script id="entry-template" type="text/x-handlebars-template">
+        	<div class="col-lg-6 col-md-6 cols-sm-12" style="display: flex;padding-top: 15px;position:relative;">
+                <div style="position: absolute;padding: 10px;">
+                    <span class="badge badge-primary">{{date meta.date}}</span>
+                </div>
+                <div style="display: flex;align-items: center;border: 1px solid #dee2e6;border-radius: 0.25rem;width:100%;">
+                    <div style="padding: 0 10px;width:100%;">
+                        <i data-postid="{{postId}}" class="fas fa-star favorite favorite_reg" style="cursor: pointer;font-size: 50px;position: absolute;top: 25px;right: 25px;"></i>
+                        <a href="/post/{{postId}}.html"><img src="{{meta.thumbnail}}" class="img-fluid"/></a>
+                        <a href="/post/{{postId}}.html" style="display: inline-block;padding: 5px 5px;margin: 0;width:100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+                            {{meta.title}}
+                        </a>
+    
+                        <div style="padding: 0 5px 10px 5px;">
+                            {{#each meta.tags}}
+                            <a href="/tags/{{hash}}/0.html"><span class="badge badge-secondary">{{tag}}</span></a>
+                            {{/each}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+    	</script>
+		{{{{/template}}}}
+		
+	</span>
+</body>
+
+</html>
