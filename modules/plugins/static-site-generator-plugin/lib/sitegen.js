@@ -51,7 +51,37 @@ module.exports = async (appContext, util, templates, dirs) => {
         };
 
         async generateExtPages() {
+            logger.info("---- begin extention pages ----");
 
+            const tags = await this.sql.selectQuery("SELECT tag, COUNT(*) AS cnt FROM tag_data GROUP BY tag ORDER BY cnt DESC LIMIT ?", [20]);
+            const newest = await this.sql.selectQuery("SELECT post_id, title, create_at, thumbnail, tags FROM post_data ORDER BY create_at DESC LIMIT ?", [5]);
+            const calender = parseCalender(await this.sql.selectQuery("SELECT caldata, COUNT(*) AS cnt FROM post_data GROUP BY caldata", []));
+            
+            const extentions = templates.names().filter(t => t.startsWith("ext."));
+            
+            await appContext.core.fileSystem.mkdirs(dirs.publicDir +"/ext");
+
+            for(var i=0; i<extentions.length; i++) {
+                const ext = extentions[i];
+
+                logger.info("    - start render extention page : " + ext);
+                const file =(appContext.core.external("path").basename(ext, ".hbs")).substr(4);
+
+                logger.info("    - generate extention page : " + ext + ", " + file);
+                const text = templates.render(ext, {
+                    configure :this.configure,
+                    newest : newest,
+                    tags : tags,
+                    calender : calender
+                });
+
+                logger.info("    - write extention page : " + ext + " => " + dirs.publicDir + "/ext/" + file) ;
+                await appContext.core.fileSystem.writeFile(dirs.publicDir + "/ext/" + file,  text, "utf8");
+
+                logger.info("    - end render extention page : " + ext) ;
+            }
+
+            logger.info("---- ned extention pages ----");
         };
 
         async resourceCopy() {
@@ -93,7 +123,7 @@ module.exports = async (appContext, util, templates, dirs) => {
             }
 
             logger.info("    - generate rss : rss.xml" );
-            const xml = templates("rss.xml.hbs", {
+            const xml = templates.render("rss.xml.hbs", {
                 configure : this.configure,
                 rss : {
                     now : new Date(),
@@ -133,7 +163,7 @@ module.exports = async (appContext, util, templates, dirs) => {
 
         async generateIndexPage() {
             logger.info("---- begin regenerate top index html ----");
-            const html = templates("index.html.hbs", {
+            const html = templates.render("index.html.hbs", {
                 configure : this.configure
             });
             await appContext.core.fileSystem.writeFile(dirs.publicDir + "/index.html",  html, "utf8");
@@ -154,7 +184,7 @@ module.exports = async (appContext, util, templates, dirs) => {
                     return e;
                 });
         
-                const html = templates("navi.html.hbs", {
+                const html = templates.render("navi.html.hbs", {
                     configure :this.configure,
                     newest : newest,
                     tags : tags,
@@ -198,7 +228,7 @@ module.exports = async (appContext, util, templates, dirs) => {
             }
 
             logger.info("    - generate all tag page start");
-            const html = templates("alltags.html.hbs", {
+            const html = templates.render("alltags.html.hbs", {
                 configure : this.configure,
                 tags : tags,
                 page : {
@@ -253,7 +283,7 @@ module.exports = async (appContext, util, templates, dirs) => {
                 const meta = appContext.core.external("js-yaml").safeLoad(match !== null ? match[2].trim() : {});
                 
                 logger.info("    - generate html : " + file);
-                const html = templates("article.html.hbs", {
+                const html = templates.render("article.html.hbs", {
                     configure : this.configure,
                     newest : newest,
                     tags : tags,
