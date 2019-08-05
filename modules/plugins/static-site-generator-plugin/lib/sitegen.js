@@ -50,6 +50,47 @@ module.exports = async (appContext, util, templates, dirs) => {
             this.posts = posts;
         };
 
+        async generateRSS() {
+            logger.info("---- begin regenerate rss xml ----");
+
+            logger.info("    - search target articles");
+            const posts = await this.sql.selectQuery("SELECT post_id FROM post_data ORDER BY create_at DESC LIMIT ?", [20]);
+
+            const postData = [];
+
+            for(var i=0; i<posts.length; i++) {
+                const postId = posts[i].post_id;
+                const file =  postId + ".md";
+
+                logger.info("    - prepare rss entry start : " + file);
+                logger.info("    - parsing rss metadata : " + file);
+                
+                const text = await appContext.core.fileSystem.readFile(dirs.postDir + "/" + file, "utf8");
+                const match =  /(---)([\s\S]*)(---)/gm.exec(text);
+                const meta = appContext.core.external("js-yaml").safeLoad(match !== null ? match[2].trim() : {});
+                
+                postData.push({
+                    meta : meta,
+                    postId : postId,
+                    text : text.replace(/(---)([\s\S]*)(---)/gm, '').trim()
+                });
+
+                logger.info("    - prepare rss entry end : " + file);
+                logger.info("    - generate html : " + file);
+            }
+
+            const xml = templates("rss.html.hbs", {
+                configure : this.configure,
+                rss : {
+                    now : new Date(),
+                    generator : ""
+                },
+                calender : calender,
+                posts : postData
+            });
+            await appContext.core.fileSystem.writeFile(dirs.publicDir + "/rss.xml",  xml, "utf8");
+        };
+
         async generateSiteContent(posts) {
             logger.info("---- begin regenerate site content json ----");
 

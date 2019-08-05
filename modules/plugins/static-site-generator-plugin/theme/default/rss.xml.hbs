@@ -1,32 +1,36 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0"?>
 <rss version="2.0">
     <channel>
         <title>{{configure.site.sitename}}</title>
-        <link>{{configure.site.url}}</link>
-        <description>
-            <![CDATA[{{configure.site.description}}]]>
-        </description>
+        <link>{{@root.configure.site.url}}</link>
+        <description>{{configure.site.description}}</description>
+        <lastBuildDate>{{utc rss.now}}</lastBuildDate>
+        <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+        <generator>{{rss.generator}}</generator>
         <image>
+            <url>{{@root.configure.site.url}}/{{@root.configure.site.favicon}}</url>
             <title>{{configure.site.sitename}}</title>
-            <link>{{configure.site.url}}</link>
-            <url>{{configure.favicon}}</url>
+            <link>{{@root.configure.site.url}}</link>
         </image>
 
-        <lastBuildDate>{{core.lastBuildDate}}</lastBuildDate>
-        <language>{{configure.site.language}}</language>
-        <pubDate>{{core.lastBuildDate}}</pubDate>
-        <category>{{configure.site.category}}</category>
-
-        {{#each entry}}
+        {{#each posts}}
         <item>
-            <title>{{title}}</title>
-            <link>{{configure.site.url}}post/{{post_id}}.html</link>
+            <title>{{meta.title}}</title>
+            <link>{{@root.configure.site.url}}post/{{post_id}}.html</link>
             <description>
-                <![CDATA[{{description}}]]>
+                {{marked body "escape"}}
             </description>
-            <pubDate>>{{configure.site.url}}post/{{post_id}}.html</pubDate>
-            <author>configure.author.name</author>
+            <pubDate>{{utc date}}</pubDate>
+            <guid isPermalink="false">{{post_id}}</guid>
+
+            {{#each tags}}
+            <category>{{this}}</category>
+            {{/each}}
+
+            <enclosure url="{{@root.configure.site.url}}{{meta.thumbnail}}"
+                type="{{meta.thumbnail_type}}" length="{{meta.thumbnail_size}}" />
         </item>
-        {{each}}
+        {{/each}}
+
     </channel>
 </rss>

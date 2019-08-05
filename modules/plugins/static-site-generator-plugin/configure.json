@@ -10,6 +10,7 @@
     "site" : {
         "description" : "sample description",
         "sitename" : "Sample Site",
+        "url"   : "",
         "link" : [
             {
                 "url" : "https://www.google.com/?hl=ja",
