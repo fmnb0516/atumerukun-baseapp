@@ -151,6 +151,14 @@ module.exports = async (appContext, util, templates, dirs) => {
                 const text = await appContext.core.fileSystem.readFile(dirs.postDir + "/" + file, "utf8");
                 const match =  /(---)([\s\S]*)(---)/gm.exec(text);
                 const meta = appContext.core.external("js-yaml").safeLoad(match !== null ? match[2].trim() : {});
+
+                meta.tags = meta.tags.map(t => {
+                    return {
+                        hash : util.md5(t),
+                        tag : t,  
+                    };
+                });
+
                 await appContext.core.fileSystem.appendFile(dirs.publicDir + "/content.json",  prefix + JSON.stringify({
                     meta : meta,
                     postId : postId

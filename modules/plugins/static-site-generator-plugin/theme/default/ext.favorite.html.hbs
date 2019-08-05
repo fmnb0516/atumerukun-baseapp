@@ -55,16 +55,11 @@
                         return d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日";
                     });
 
-					Handlebars.registerHelper('hash', function (val, options) {
-						return CybozuLabs.MD5.calc(val, CybozuLabs.MD5.BY_UTF16);
-                    });
-
-                    function resolve(data, postId) {
+		           function resolve(data, postId) {
                         const d = data.find(function(d) {
                             return d.postId === postId;
                         });
 
-                        console.log(d);
                         return d;
                     };
 
@@ -124,7 +119,7 @@
     
                         <div style="padding: 0 5px 10px 5px;">
                             {{#each meta.tags}}
-                            <a href="/tags/{{hash this}}/0.html"><span class="badge badge-secondary">{{this}}</span></a>
+                            <a href="/tags/{{hash}}/0.html"><span class="badge badge-secondary">{{tag}}</span></a>
                             {{/each}}
                         </div>
                     </div>
