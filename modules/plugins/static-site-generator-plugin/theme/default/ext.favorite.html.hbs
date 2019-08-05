@@ -84,7 +84,7 @@
 
                 })();
 
-				$(".favorite").click(function () {
+				$(document).on("click", ".favorite", function () {
 					var favorites = localStorage.getItem("favorites");
 					favorites = favorites ? JSON.parse(favorites) : {};
 
