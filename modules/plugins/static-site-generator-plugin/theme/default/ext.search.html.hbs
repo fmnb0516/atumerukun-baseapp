@@ -107,6 +107,16 @@
 
 						$("#render-area").html(entries.join());
 
+						(function() {
+							var favorites = localStorage.getItem("favorites");
+							favorites = favorites ? JSON.parse(favorites) : {};
+							
+							$(".favorite").each(function() {
+								var postId = $(this).attr("data-postid");
+								$(this).addClass(favorites[postId] ? "favorite_reg" : "favorite_unreg");
+							});
+						})();
+
 						return false;
 					});
                 })();
@@ -138,7 +148,7 @@
                 </div>
                 <div style="display: flex;align-items: center;border: 1px solid #dee2e6;border-radius: 0.25rem;width:100%;">
                     <div style="padding: 0 10px;width:100%;">
-                        <i data-postid="{{postId}}" class="fas fa-star favorite favorite_reg" style="cursor: pointer;font-size: 50px;position: absolute;top: 25px;right: 25px;"></i>
+                        <i data-postid="{{postId}}" class="fas fa-star favorite" style="cursor: pointer;font-size: 50px;position: absolute;top: 25px;right: 25px;"></i>
                         <a href="/post/{{postId}}.html"><img src="{{meta.thumbnail}}" class="img-fluid"/></a>
                         <a href="/post/{{postId}}.html" style="display: inline-block;padding: 5px 5px;margin: 0;width:100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
                             {{meta.title}}
