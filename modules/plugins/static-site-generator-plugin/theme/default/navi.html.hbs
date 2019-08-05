@@ -3,6 +3,16 @@
 		{{include "head.meta.html.hbs" this}}
 		<title>{{page.title}} - {{configure.site.sitename}}</title>
 		{{include "head.css.html.hbs" this}}
+
+		<style>
+			.favorite_reg {
+				color: yellow;
+			}
+
+			.favorite_unreg {
+				color: gainsboro;
+			}
+		</style>
 	</head>
 	
 	<body>
@@ -25,7 +35,7 @@
 							</div>
 							<div style="display: flex;align-items: center;border: 1px solid #dee2e6;border-radius: 0.25rem;width:100%;">
 								<div style="padding 0 10px;width:100%;">
-									<i class="fas fa-star" style="font-size: 50px;position: absolute;top: 25px;right: 25px;color: gainsboro;"></i>
+									<i data-postid="{{post_id}}" class="fas fa-star favorite" style="cursor: pointer;font-size: 50px;position: absolute;top: 25px;right: 25px;"></i>
 									<a href="/post/{{post_id}}.html"><img src="{{thumbnail}}" class="img-fluid"/></a>
 									<a href="/post/{{post_id}}.html" style="display: inline-block;padding: 5px 5px;margin: 0;width:100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
 										{{title}}
@@ -60,6 +70,38 @@
 
 		<span id="javascript-container" style="display: none;">
 			{{include "javascript.html.hbs" this}}
+
+			<script type="text/javascript">
+				$(function() {
+					(function() {
+						var favorites = localStorage.getItem("favorites");
+						favorites = favorites ? JSON.parse(favorites) : {};
+
+						$(".favorite").each(function() {
+							var postId = $(this).attr("data-postid");
+							$(this).addClass(favorites[postId] ? "favorite_reg" : "favorite_unreg");
+						});
+					})();
+
+					$(".favorite").click(function() {
+						var favorites = localStorage.getItem("favorites");
+						favorites = favorites ? JSON.parse(favorites) : {};
+
+						var selector = $(this);
+						var postId = selector.attr("data-postid");
+						if(selector.hasClass("favorite_reg")) {
+							selector.removeClass("favorite_reg").addClass("favorite_unreg");
+							delete favorites[postId];
+						} else if(selector.hasClass("favorite_unreg")) {
+							selector.removeClass("favorite_unreg").addClass("favorite_reg");
+							favorites[postId] = {postId : postId};
+						}
+						localStorage.setItem('favorites', JSON.stringify(favorites));
+
+					});
+
+				});
+			</script>
 		</span>
 	</body>
 </html>
