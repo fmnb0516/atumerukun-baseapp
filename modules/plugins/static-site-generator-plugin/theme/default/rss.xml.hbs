@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
     <channel>
         <title>{{configure.site.sitename}}</title>
@@ -16,12 +16,12 @@
         {{#each posts}}
         <item>
             <title>{{meta.title}}</title>
-            <link>{{@root.configure.site.url}}post/{{post_id}}.html</link>
+            <link>{{@root.configure.site.url}}post/{{postId}}.html</link>
             <description>
-                {{marked body "escape"}}
+                {{marked text "escape"}}
             </description>
-            <pubDate>{{utc date}}</pubDate>
-            <guid isPermalink="false">{{post_id}}</guid>
+            <pubDate>{{utc meta.date}}</pubDate>
+            <guid isPermalink="false">{{postId}}</guid>
 
             {{#each tags}}
             <category>{{this}}</category>

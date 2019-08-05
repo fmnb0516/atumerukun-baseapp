@@ -36,8 +36,20 @@ module.exports = async (appContext, themeDir, utils) => {
         return new Handlebars.SafeString(result.join(''));
     });
 
+    
+    Handlebars.registerHelper('utc', function (val, options) {
+        if(val === undefined || val === null) {
+            return "";
+        }
+        const d = (typeof val === "string" || typeof val === "number")  ? new Date(val) : val;
+        return d.toUTCString();
+    });
+
     Handlebars.registerHelper('date', function (val, options) {
-        const d = new Date(val);
+        if(val === undefined || val === null) {
+            return "";
+        }
+        const d = (typeof val === "string" || typeof val === "number")  ? new Date(val) : val;
         return d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日";
     });
 
@@ -57,8 +69,9 @@ module.exports = async (appContext, themeDir, utils) => {
         return JSON.stringify(data);
     });
 
-    Handlebars.registerHelper('marked', function (text, options) {
-        return new Handlebars.SafeString(marked(text, {renderer: renderer}));
+    Handlebars.registerHelper('marked', function (text, mode, options) {
+        const html = marked(text, {renderer: renderer});
+        return mode === "escape" ? html : new Handlebars.SafeString(html);
     });
 
     return (name, data) => {

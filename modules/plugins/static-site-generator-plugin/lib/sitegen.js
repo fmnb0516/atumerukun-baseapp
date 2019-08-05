@@ -74,18 +74,16 @@ module.exports = async (appContext, util, templates, dirs) => {
                     postId : postId,
                     text : text.replace(/(---)([\s\S]*)(---)/gm, '').trim()
                 });
-
                 logger.info("    - prepare rss entry end : " + file);
-                logger.info("    - generate html : " + file);
             }
 
-            const xml = templates("rss.html.hbs", {
+            logger.info("    - generate rss : rss.xml" );
+            const xml = templates("rss.xml.hbs", {
                 configure : this.configure,
                 rss : {
                     now : new Date(),
-                    generator : ""
+                    generator : "atumerukun"
                 },
-                calender : calender,
                 posts : postData
             });
             await appContext.core.fileSystem.writeFile(dirs.publicDir + "/rss.xml",  xml, "utf8");

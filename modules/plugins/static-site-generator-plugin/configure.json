@@ -10,7 +10,7 @@
     "site" : {
         "description" : "sample description",
         "sitename" : "Sample Site",
-        "url"   : "",
+        "url"   : "http://localhost:8888/",
         "link" : [
             {
                 "url" : "https://www.google.com/?hl=ja",

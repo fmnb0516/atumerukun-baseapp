@@ -86,6 +86,7 @@ module.exports = async (appContext) => {
             await site.regenerateTags();
             await site.generateIndexPage();
             await site.generateSiteContent();
+            await site.generateRSS();
             await resourceCopy();
         }  finally  {
             status.flg = false;
