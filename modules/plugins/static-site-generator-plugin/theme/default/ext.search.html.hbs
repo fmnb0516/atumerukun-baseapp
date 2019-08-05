@@ -28,6 +28,16 @@
 					<i class="fas fa-book-medical"></i>
 					全文検索
 				</h5>
+
+				<form style="padding: 10px 20px;" id="seach-form">
+					<div class="form-group">
+						<label for="search-articles-input">検索キーワード</label>
+						<input type="search" class="form-control" id="search-articles-input" aria-describedby="search-articles-input-help" placeholder="">
+						<small id="search-articles-input-help" class="form-text text-muted"></small>
+					</div>
+					<hr/>	  
+				</form>
+
 				<div class="d-flex flex-row flex-wrap" id="render-area">
 				</div>
 			</div>
@@ -47,6 +57,8 @@
 		<script type="text/javascript">
 			$(function () {
 				(function() {
+					var contentData = [];
+
                     Handlebars.registerHelper('date', function (val, options) {
                         if(val === undefined || val === null) {
                             return "";
@@ -70,8 +82,33 @@
                         url: '/content.json',
                         dataType: 'json'
                     }).done( function (data, textStatus, jqXHR) {
+						contentData = data;
                     });
 
+
+					$("#seach-form").submit(function() {
+						var input = $("#search-articles-input").val();
+
+						var matches = contentData.filter(function(d) {
+							var title = d.meta.title;
+							if(title.indexOf(input) !== -1) {
+								return true;
+							}
+
+							return d.meta.tags.findIndex(function(t) {
+								return t.tag.indexOf(input) !== -1;
+							}) !== -1;
+						});
+
+						var entries = [];
+						matches.forEach(function(context) {
+							entries.push(template(context));
+						});
+
+						$("#render-area").html(entries.join());
+
+						return false;
+					});
                 })();
 
 				$(document).on("click", ".favorite", function () {
