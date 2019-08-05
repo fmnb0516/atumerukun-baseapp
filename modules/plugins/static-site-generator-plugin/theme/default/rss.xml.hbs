@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+    <channel>
+        <title>{{configure.site.sitename}}</title>
+        <link>{{@root.configure.site.url}}</link>
+        <description>{{configure.site.description}}</description>
+        <lastBuildDate>{{utc rss.now}}</lastBuildDate>
+        <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+        <generator>{{rss.generator}}</generator>
+        <image>
+            <url>{{@root.configure.site.url}}/{{@root.configure.site.favicon}}</url>
+            <title>{{configure.site.sitename}}</title>
+            <link>{{@root.configure.site.url}}</link>
+        </image>
+
+        {{#each posts}}
+        <item>
+            <title>{{meta.title}}</title>
+            <link>{{@root.configure.site.url}}post/{{postId}}.html</link>
+            <description>
+                {{marked text "escape"}}
+            </description>
+            <pubDate>{{utc meta.date}}</pubDate>
+            <guid isPermalink="false">{{postId}}</guid>
+
+            {{#each tags}}
+            <category>{{this}}</category>
+            {{/each}}
+
+            <enclosure url="{{@root.configure.site.url}}{{meta.thumbnail}}"
+                type="{{meta.thumbnail_type}}" length="{{meta.thumbnail_size}}" />
+        </item>
+        {{/each}}
+
+    </channel>
+</rss>

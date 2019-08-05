@@ -85,6 +85,8 @@ module.exports = async (appContext) => {
             await site.regenerateCalenderNavigations();
             await site.regenerateTags();
             await site.generateIndexPage();
+            await site.generateSiteContent();
+            await site.generateRSS();
             await resourceCopy();
         }  finally  {
             status.flg = false;
@@ -130,5 +132,5 @@ module.exports = async (appContext) => {
     appContext.event.on("system.exit", (e) => {
     });
 
-    //await generateAllPosts();
+    await generateAllPosts();
 };
