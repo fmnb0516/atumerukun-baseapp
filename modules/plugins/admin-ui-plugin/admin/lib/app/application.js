@@ -220,14 +220,52 @@
 		});
 	})();
 
-	application.initNaviButton = function(page, container, binding) {
-		application.request({
-			url : "../../admin-ui-plugin/btninfo/"+page,
-			method : "GET"
-		}).then(function(resp) {
-		});
+	(function() {
+		function resolveBinding(str, binding) {
+			var keys = Object.keys(binding);
+			for(var i=0; i<keys.length; i++) {
+				var val = binding[keys[i]];
+				var name = 	"${" + keys[i] + "}";
+				str = str.replace(name, val);
+			}
+			return str;
+		};
 
-	};
+		function addNaviBtn(container, btn, binding) {
+			var btnElm = $("<button>", {type:"button", class:"btn btn-primary"})
+				.text(btn.label);
+			container.append(btnElm);
+			var url = resolveBinding(btn.url, binding);
+
+			btnElm.click(function() {
+				application.confirm(true, btn.confirm_message, function() {
+					var opt = {method:btn.method, url:url};
+					application.request(opt)
+						.then(function(resp) {
+							if(resp.status === 200) {
+								application.toast("info", btn.success_message);
+							}
+					});
+
+				});
+
+			});
+		};
+			
+		application.initNaviButton = function(page, container, binding) {
+			var target = $(container);
+			application.request({
+				url : "../../admin-ui-plugin/btninfo/"+page,
+				method : "GET"
+			}).then(function(resp) {
+				for(var i=0; i<resp.result.navi.length; i++){
+					var btn = resp.result.navi[i];
+					addNaviBtn(target, btn, binding);
+				}
+			});
+		};
+
+	})();
 	
 	exports.application = application;
 })(window);

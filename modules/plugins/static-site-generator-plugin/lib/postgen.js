@@ -1,4 +1,4 @@
-module.exports = async (appContext, util) => {
+module.exports = async (appContext, util, storageDir) => {
     return async (id, postFilePath, assetDir, metadata) => {
         const textLine = [];
         const images = util.resolve(metadata.page_values, "image");
@@ -8,7 +8,7 @@ module.exports = async (appContext, util) => {
 
 		textLine.push("---");
 		textLine.push("title: \"" + title + "\"");
-		textLine.push("date: \"" + dateformat(new Date()) + "\"");
+		textLine.push("date: \"" + util.dateformat(new Date()) + "\"");
 		textLine.push("thumbnail: \"" + "/assets/"+id+"/"+ images[0] + "\"");
 		textLine.push("tags:");
         

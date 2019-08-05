@@ -45,7 +45,7 @@ module.exports = async (appContext) => {
         publicDir : publicDir
     });
 
-    const postgen = await require("./lib/postgen.js")(appContext, util);
+    const postgen = await require("./lib/postgen.js")(appContext, util, storageDir);
 
     const cleanDatabase = async () => {
         const sql =sqls(db);
@@ -106,7 +106,7 @@ module.exports = async (appContext) => {
     appContext.webApiInstaller.post('/publish/:id', (req, res) => {
         const successHandler = createSuccessHandler(req, res);
 
-        context.repo.getPageResult(req.params.id)
+        appContext.core.repo.getPageResult(req.params.id)
             .then(data => storePageResult(data))
             .then(() => successHandler("解析結果を公開しました"));
     });
@@ -115,6 +115,8 @@ module.exports = async (appContext) => {
         e.context.navi.push({
             label : "公開",
             url   : "/static-site-generator-plugin/publish/${pagevalue_id}",
+            success_message : "公開しました",
+            confirm_message : "解析結果を公開しますか",
             method: "POST"
         });
     });
