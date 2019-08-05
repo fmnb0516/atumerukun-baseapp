@@ -17,6 +17,10 @@ module.exports = async (appContext, themeDir, utils) => {
         tpl[templateFiles[i]] = Handlebars.compile(text);
     }
     
+    Handlebars.registerHelper('template', function(options) {
+        return options.fn(this);
+    });
+
     Handlebars.registerHelper('split', function (text, max, options) {
         const ary = text.split(",");
 
@@ -36,7 +40,6 @@ module.exports = async (appContext, themeDir, utils) => {
         return new Handlebars.SafeString(result.join(''));
     });
 
-    
     Handlebars.registerHelper('utc', function (val, options) {
         if(val === undefined || val === null) {
             return "";
