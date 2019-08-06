@@ -5,3 +5,4 @@
 /modules/plugins/static-site-generator-plugin/source
 /modules/plugins/static-site-generator-plugin/public
 /configure.json
+/modules/plugins/static-site-generator-plugin/configure.json
