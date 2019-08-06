@@ -10,6 +10,31 @@ const createSuccessHandler = (req, res) => {
 
 module.exports = async (appContext) => {
     const moduleDir = appContext.dir;
+
+    if((await appContext.core.fileSystem.exist(moduleDir + "/configure.json")) === false) {
+        const initialData = {
+            "favicon" : "",
+            "theme" : "default",
+            "author" : {
+                "name" : "",
+                "email" : ""
+            },
+            
+            "site" : {
+                "description" : "",
+                "sitename" : "",
+                "url"   : "http://localhost:8888/",
+                "link" : [
+                ]
+            },
+        
+            "social" : {
+                "twitter" : ""
+            }
+        };
+        await appContext.core.fileSystem.writeFile(moduleDir + "/configure.json", JSON.stringify(initialData), 'utf8');
+    }
+
     const configure = await appContext.core.fileSystem.readFile(moduleDir + "/configure.json", 'utf8')
         .then(text => JSON.parse(text));
         
