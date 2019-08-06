@@ -30,6 +30,10 @@ module.exports = async (appContext) => {
         
             "social" : {
                 "twitter" : ""
+            },
+
+            "generate" : {
+                "schedule" : "",
             }
         };
         await appContext.core.fileSystem.writeFile(moduleDir + "/configure.json", JSON.stringify(initialData), 'utf8');
@@ -146,9 +150,13 @@ module.exports = async (appContext) => {
         });
     });
 
-    appContext.taskInstaller.install("generate-static-site", "5 23 * * *", async () => {
-        await generateAllPosts();
-    });
+    const schedule = configure.generate.schedule
+
+    if(schedule !== "") {
+        appContext.taskInstaller.install("generate-static-site", schedule, async () => {
+            await generateAllPosts();
+        });
+    }
 
     appContext.logger.info("mock server listen : 8888 => http://localhost:8888/");
     mockserver(publicDir, 8888);
