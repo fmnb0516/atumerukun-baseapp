@@ -154,6 +154,4 @@ module.exports = async (appContext) => {
     mockserver(publicDir, 8888);
     appContext.event.on("system.exit", (e) => {
     });
-
-    await generateAllPosts();
 };
