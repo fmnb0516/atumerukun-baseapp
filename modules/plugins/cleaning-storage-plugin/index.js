@@ -60,4 +60,5 @@ module.exports = async (appContext) => {
         const successHandler = createSuccessHandler(req, res);
         coleanupStorage().then(() => successHandler("cleanup success."));
     });
+
 };

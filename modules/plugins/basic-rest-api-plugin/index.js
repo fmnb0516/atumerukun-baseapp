@@ -179,7 +179,7 @@ module.exports = (appContext) => {
 		const successHandler = createSuccessHandler(req, res);
 		const errorHandler = createErrorHandler(req, res);
 		
-		appContext.repo.removePageResult(req.params.id)
+		appContext.core.repo.removePageResult(req.params.id)
 			.then(successHandler, errorHandler);
 	});
 
